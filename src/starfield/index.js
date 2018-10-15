@@ -1,7 +1,7 @@
 import Phaser from '../Phaser';
-import Stars from './Stars';
+// import Stars from './Stars';
 
-class Scene extends Phaser.Scene {
+class Starfield extends Phaser.Scene {
 
     stars = new Array(100).fill(1);
     wordlCenterX = 0;
@@ -127,4 +127,4 @@ class Scene extends Phaser.Scene {
     }
 }
 
-export default Scene;
+export default Starfield;
