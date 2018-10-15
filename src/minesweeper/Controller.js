@@ -1,10 +1,33 @@
-const Controller = (scene) => {
+const Controller = (scene, Phaser) => {
 
     return {
 
         randomArrayEle: (arr) => {
     
             return arr[Math.floor(Math.random() * arr.length)];
+        },
+
+        controllers: (totalBoombs) => {
+
+            let div = document.createElement('div');
+            div.id = 'boombsnumber';
+            div.innerHTML = 'Total Bombs (max 99)<br />';
+            let inp = document.createElement('input');
+            inp.type = 'number';
+            inp.value = totalBoombs;
+            inp.id = 'boombvalue';
+            inp.max = '99';
+            let button = document.createElement('button');
+            button.innerHTML = 'APPLY';
+            button.onclick = () => {
+    
+                let speed = document.getElementById('boombvalue').value;
+                scene.events.emit('boombsnumberchange', speed);
+            };
+            div.appendChild(inp);
+            div.appendChild(button);
+            let body = document.getElementsByTagName('body')[0];
+            body.appendChild(div);
         },
 
         makePosX: (boomWidth, worldWidth) => {
@@ -46,22 +69,27 @@ const Controller = (scene) => {
             return grid;
         },
 
+        walkGrid: (grid, callBack) => {
+
+            for(let posY in grid)
+                for(let posX in grid[posY])
+                    callBack(posY, posX);
+        },
+
         placeSprites: (grid, state) => {
 
-            for(let posY in grid) {
-                for(let posX in grid[posY]) {
+            scene.Ctrl.walkGrid(grid, (posY, posX) => {
 
-                    let sprite = scene.add.sprite(posX, posY, 'ready');
-                    sprite.state = {
-
-                        ...state,
-                        x: posX,
-                        y: posY
-                    };
-                    
-                    grid[posY][posX] = sprite;
-                }
-            }
+                let sprite = scene.add.sprite(posX, posY, 'ready');
+                sprite.state = {
+    
+                    ...state,
+                    x: posX,
+                    y: posY
+                };
+                
+                grid[posY][posX] = sprite;
+            });
 
             return grid;
         },
@@ -69,9 +97,10 @@ const Controller = (scene) => {
         countPositions: (grid) => {
 
             let totalPostions = 0;
-            for(let posY in grid)
-                for(let posX in grid[posY])
-                    totalPostions++;
+            scene.Ctrl.walkGrid(grid, () => {
+                
+                totalPostions++;
+            });
 
             return totalPostions;
         },
@@ -98,23 +127,20 @@ const Controller = (scene) => {
 
         attachEvent: (grid, onCklickHandler) => {
 
-            for(let posY in grid)
-                for(let posX in grid[posY]){
+            scene.Ctrl.walkGrid(grid, (posY, posX) => {
 
-                    grid[posY][posX].setInteractive({ useHandCursor: true });
-                    grid[posY][posX].on('pointerup', () => onCklickHandler(grid[posY][posX]));
-                }
+                grid[posY][posX].setInteractive({ useHandCursor: true });
+                grid[posY][posX].on('pointerup', () => onCklickHandler(grid[posY][posX]));
+            });
 
             return grid;
         },
 
         countBoombsAllround: (grid, boomWidth, boomHeight) => {
 
-            for(let posY in grid)
-                for(let posX in grid[posY]){
+            scene.Ctrl.walkGrid(grid, (posY, posX) => {
 
-                    if(grid[posY][posX].state.type !== 'boomb')
-                        continue;
+                if(grid[posY][posX].state.type === 'boomb'){
 
                     // topLeft
                     if(grid[parseInt(posY)-boomHeight] && grid[parseInt(posY)-boomHeight][parseInt(posX)-boomWidth])
@@ -125,7 +151,7 @@ const Controller = (scene) => {
                     // topCenter
                     if(grid[parseInt(posY)-boomHeight] && grid[parseInt(posY)-boomHeight][parseInt(posX)])
                         grid[parseInt(posY)-boomHeight][parseInt(posX)].state.boombsAllround++;
-
+    
                     // bottomLeft
                     if(grid[parseInt(posY)+boomHeight] && grid[parseInt(posY)+boomHeight][parseInt(posX)-boomWidth])
                         grid[parseInt(posY)+boomHeight][parseInt(posX)-boomWidth].state.boombsAllround++;
@@ -135,7 +161,7 @@ const Controller = (scene) => {
                     // bottomCenter
                     if(grid[parseInt(posY)+boomHeight] && grid[parseInt(posY)+boomHeight][parseInt(posX)])
                         grid[parseInt(posY)+boomHeight][parseInt(posX)].state.boombsAllround++;
-
+    
                     // left
                     if(grid[parseInt(posY)] && grid[parseInt(posY)][parseInt(posX)-boomWidth])
                         grid[parseInt(posY)][parseInt(posX)-boomWidth].state.boombsAllround++;
@@ -143,7 +169,8 @@ const Controller = (scene) => {
                     if(grid[parseInt(posY)] && grid[parseInt(posY)][parseInt(posX)+boomWidth])
                         grid[parseInt(posY)][parseInt(posX)+boomWidth].state.boombsAllround++;
                 }
-            
+            });
+
             return grid;
         },
 
@@ -187,17 +214,16 @@ const Controller = (scene) => {
 
         clearAll: (grid) => {
         
-            for(let posY in grid)
-                for(let posX in grid[posY]){
+            scene.Ctrl.walkGrid(grid, (posY, posX) => {
 
-                    grid[posY][posX].disableInteractive();
+                grid[posY][posX].disableInteractive();
 
-                    if(grid[posY][posX].state.type !== 'boomb')
-                        continue;
+                if(grid[posY][posX].state.type === 'boomb'){
 
                     grid[posY][posX].destroy();
                     scene.add.sprite(posX, posY, 'boomb');
                 }
+            });
         },
 
         success: (grid, worldHeight, worldWidth) => {
@@ -205,7 +231,11 @@ const Controller = (scene) => {
             scene.Ctrl.clearAll(grid);
             setTimeout(()=>{
     
-                scene.add.sprite(worldWidth / 2, worldHeight / 2, 'success').setInteractive({ useHandCursor: true }).on('pointerup', () => window.location.reload());
+                let sprite = scene.add.sprite(worldWidth / 2, worldHeight / 2, 'success').setInteractive({ useHandCursor: true });
+                sprite.on('pointerover', () => sprite.alpha = 0.9);
+                sprite.on('pointerout', () => sprite.alpha = 1);
+                sprite.on('pointerup', () => window.location.reload());
+                sprite.on('pointerup', () => window.location.reload());
             });
         },
     
@@ -214,7 +244,11 @@ const Controller = (scene) => {
             scene.Ctrl.clearAll(grid);
             setTimeout(()=>{
     
-                scene.add.sprite(worldWidth / 2, worldHeight / 2, 'gameover').setInteractive({ useHandCursor: true }).on('pointerup', () => window.location.reload());
+                let sprite = scene.add.sprite(worldWidth / 2, worldHeight / 2, 'gameover').setInteractive({ useHandCursor: true });
+                sprite.on('pointerover', () => sprite.alpha = 0.9);
+                sprite.on('pointerout', () => sprite.alpha = 1);
+                sprite.on('pointerup', () => window.location.reload());
+                sprite.on('pointerup', () => window.location.reload());
             });
         }
     };

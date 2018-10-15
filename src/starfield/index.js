@@ -1,56 +1,46 @@
 import Phaser from '../Phaser';
-// import Stars from './Stars';
 
 class Starfield extends Phaser.Scene {
 
     stars = new Array(100).fill(1);
-    wordlCenterX = 0;
-    wordlCenterY = 0;
+    worldWidth = 0;
+    worldHeight = 0;
     speed = 10;
-    color = 0xFF0000;
     distance = 300;
+    events = null;
 
     state = {
         speed: 10,
         stars: []
     };
-    
-    preload() {
-    }
-    
-    logMethods(obj) {
 
-        for(let m in obj)
-            if(typeof obj[m] == 'function')
-                console.log(m);
-    }
-    
-    create() {
-        
-        this.logMethods(new Phaser.Geom.Line(-10, -10, -20, -20));
-        this.init();
-        this.createStars();
-    }
+    controllers() {
 
-    update() {
+        let div = document.createElement('div');
+        div.id = 'speed';
+        div.innerHTML = 'SPEED CONTROL<br />';
+        let inp = document.createElement('input');
+        inp.type = 'number';
+        inp.value = 10;
+        inp.id = 'speedvalue';
+        let button = document.createElement('button');
+        button.innerHTML = 'APPLY';
+        this.events = new Phaser.Events.EventEmitter();
+        button.onclick = () => {
 
-        this.moveStars();
+            let speed = document.getElementById('speedvalue').value;
+            this.events.emit('speedChange', speed);
+        };
 
+        div.appendChild(inp);
+        div.appendChild(button);
+        let body = document.getElementsByTagName('body')[0];
+        body.appendChild(div);
     }
 
     random(max, min) {
 
         return Math.floor(Math.random()*(max-(min)+1)+(min));
-    }
-
-    init() {
-
-        this.worldWidth = this.game.config.width;
-        this.worldHeight = this.game.config.height;
-        this.worldLength = -1700;
-        this.wordlCenterX = this.game.config.width / 2;
-        this.wordlCenterX = this.game.config.width / 2;
-        this.wordlCenterY = this.game.config.height / 2;
     }
 
     createStars() {
@@ -61,8 +51,8 @@ class Starfield extends Phaser.Scene {
             let star = {
                 color: 0xFF0000,
                 size: 1,
-                x: this.random(this.wordlCenterX, -this.wordlCenterX),
-                y: this.random(this.wordlCenterY, -this.wordlCenterY),
+                x: this.random((this.worldWidth / 2), - (this.worldWidth / 2)),
+                y: this.random((this.worldHeight / 2), - (this.worldHeight / 2)),
                 z: this.random(0, this.worldLength),
                 starObj: null,
                 line: null,
@@ -70,7 +60,7 @@ class Starfield extends Phaser.Scene {
             };
 
             // starObj.x e starObj.y eu traduzo as coodenardas originas para a tela visivel (translate)
-            star.starObj = this.add.circle(star.x + this.wordlCenterX, star.y + this.wordlCenterY, star.size, this.color);
+            star.starObj = this.add.circle(star.x + (this.worldWidth / 2), star.y + (this.worldHeight / 2), star.size, star.color);
 
             star.startX = 0;
             star.startY = 0;
@@ -92,12 +82,12 @@ class Starfield extends Phaser.Scene {
 
             
             // aumentando comforme a distancia
-            star.starObj.setScale(perspective*3); 
+            star.starObj.setScale(perspective*3);
             
-            star.starObj.x = (star.x * perspective) + this.wordlCenterX;
-            star.starObj.y = (star.y * perspective) + this.wordlCenterY;
+            star.starObj.x = (star.x * perspective) + (this.worldWidth / 2);
+            star.starObj.y = (star.y * perspective) + (this.worldHeight / 2);
             // eu diminuo a distance da estrela por speed
-            star.z += this.speed;
+            star.z += parseInt(this.speed);
 
             if(star.resetZ) {
 
@@ -117,13 +107,31 @@ class Starfield extends Phaser.Scene {
             if(star.z >= 0){
 
                 // sempre traduzindo ascoordenadas originais para a tela visivel (translate)
-                star.starObj.x = star.x + this.wordlCenterX;
-                star.starObj.y = star.y + this.wordlCenterY;
+                star.starObj.x = star.x + (this.worldWidth / 2);
+                star.starObj.y = star.y + (this.worldHeight / 2);
                 star.z = this.random(this.worldLength, 0);
                 star.resetZ = true;
                 star.starObj.setScale(1);
             }
         });
+    }
+    
+    create() {
+        
+        this.controllers();
+        this.events.addListener('speedChange', (speed) => {
+
+            this.speed = speed;
+        });
+        this.worldWidth = this.game.config.width;
+        this.worldHeight = this.game.config.height;
+        this.worldLength = -1700;
+        this.createStars();
+    }
+
+    update() {
+
+        this.moveStars();
     }
 }
 
