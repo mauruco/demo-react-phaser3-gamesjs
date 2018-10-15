@@ -9,6 +9,9 @@ const Controller = (scene, Phaser) => {
 
         controllers: (totalBoombs) => {
 
+            if(document.getElementById('boombvalue'))
+                return;
+
             let div = document.createElement('div');
             div.id = 'boombsnumber';
             div.innerHTML = 'Total Bombs (max 99)<br />';
@@ -21,8 +24,10 @@ const Controller = (scene, Phaser) => {
             button.innerHTML = 'APPLY';
             button.onclick = () => {
     
-                let speed = document.getElementById('boombvalue').value;
-                scene.events.emit('boombsnumberchange', speed);
+                if(document.getElementById('boombvalue').value > 99)
+                    document.getElementById('boombvalue').value = 99;
+                let boombs = document.getElementById('boombvalue').value;
+                scene.events.emit('boombsnumberchange', boombs);
             };
             div.appendChild(inp);
             div.appendChild(button);

@@ -4,7 +4,7 @@ class SceneLoader {
 
     hash = '';
 
-    constructor(Starfield, Minesweeper) {
+    constructor(Starfield, Minesweeper, Snake) {
 
         let config = {
             type: Phaser.AUTO,
@@ -44,8 +44,14 @@ class SceneLoader {
             a.href = `${window.location.origin}#minesweeper`;
             a.innerHTML = 'MINESWEEPER';
             a.onclick = () => window.location.reload();
-
             div.appendChild(a);
+
+            a = document.createElement('a');
+            a.href = `${window.location.origin}#snake`;
+            a.innerHTML = 'SNAKE';
+            a.onclick = () => window.location.reload();
+            div.appendChild(a);
+
             body.appendChild(div);
         }
 
@@ -69,6 +75,12 @@ class SceneLoader {
         if(this.hash === '#minesweeper') {
 
             config.scene.push(Minesweeper);
+            new Phaser.Game(config);
+        }
+
+        if(this.hash === '#snake') {
+
+            config.scene.push(Snake);
             new Phaser.Game(config);
         }
     }

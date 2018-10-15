@@ -16,12 +16,10 @@ class Minesweeper extends Phaser.Scene {
 
     init(params) {
 
-        if(params && params.totalBoombs){
-            
-            this.totalBoombs = params.totalBoombs;
-            if(this.totalBoombs > 99)
-                this.totalBoombs = 99;
-        }
+        if(!params || !params.totalBoombs)
+            return;
+
+        this.totalBoombs = params.totalBoombs;
     }
     
     preload() {
@@ -29,18 +27,20 @@ class Minesweeper extends Phaser.Scene {
         this.load.image('empty', 'assets/minesweeper/square_empty.png');
         this.load.image('boomb', 'assets/minesweeper/square_red.png');
         this.load.image('ready', 'assets/minesweeper/square_green.png');
-        this.load.image('gameover', 'assets/minesweeper/gameover.png');
-        this.load.image('success', 'assets/minesweeper/success.png');
+        this.load.image('gameover', 'assets/gameover.png');
+        this.load.image('success', 'assets/success.png');
     }
     
     create() {
 
         this.Ctrl = Controller(this);
         this.Ctrl.controllers(this.totalBoombs);
+
         this.events.addListener('boombsnumberchange', (totalBoombs) => {
 
             this.scene.restart({totalBoombs});
         });
+
         this.worldWidth = this.game.config.width;
         this.worldHeight = this.game.config.height;
         this.posY = this.Ctrl.makePosY(this.boomHeight, this.worldHeight);
