@@ -4,9 +4,26 @@ html, body{
   font-family: Lato, "Lucida Grande", Tahoma, Sans-Serif;
 }
 canvas {
-  margin: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -300px;
+  margin-left: -300px;
+  width: 600px;
 }
-#sceneselecter a, a#back{
+#menu, #opt {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  margin: 0;
+  padding: 0;
+}
+#opt {
+  right: 10px;
+  left: auto;
+  text-align: right;
+}
+#menu a, #opt a, #opt button{
   display: inline-block;
   text-decoration: none;
   padding: 5px 10px;
@@ -17,13 +34,27 @@ canvas {
   background-color: #FFFFFF;
   border-radius: 4px;
 }
-a#back {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-#sceneselecter a:hover, a#back:hover{
+#menu a:hover, #opt a:hover, #opt button:hover{
   background-color: #EFEFEF;
+}
+#menu a.dark, #opt a.dark, #opt button.dark{
+  background-color: #333333;
+  color: #EEEEEE;
+}
+#menu a.dark:hover, #opt a.dark:hover, #opt button.dark:hover{
+  background-color: #000000;
+}
+#opt input[type=number] {
+  padding: 5px 10px;
+  max-width: 50px;
+  border-radius: 4px;
+  border: 1px solid #666666;
+}
+#opt a, #opt button {
+  margin-right: 0;
+}
+.canvas-border {
+  border: 1px solid #333333;
 }
 #speed{
   position: absolute;

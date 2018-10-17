@@ -16,26 +16,22 @@ class Starfield extends Phaser.Scene {
 
     controllers() {
 
-        let div = document.createElement('div');
-        div.id = 'speed';
-        div.innerHTML = 'SPEED CONTROL<br />';
-        let inp = document.createElement('input');
-        inp.type = 'number';
-        inp.value = 10;
-        inp.id = 'speedvalue';
+        let inline = document.createElement('span');
+        inline.className = 'inline';
+        inline.innerHTML = 'SPEED:';
+        let speedInp = document.createElement('input');
+        speedInp.type = 'number';
+        speedInp.value = 10;
+        speedInp.id = 'starspeed';
         let button = document.createElement('button');
+        button.className = 'dark';
         button.innerHTML = 'APPLY';
         this.events = new Phaser.Events.EventEmitter();
-        button.onclick = () => {
-
-            let speed = document.getElementById('speedvalue').value;
-            this.events.emit('speedChange', speed);
-        };
-
-        div.appendChild(inp);
-        div.appendChild(button);
-        let body = document.getElementsByTagName('body')[0];
-        body.appendChild(div);
+        button.onclick = () =>this.events.emit('speedChange', speedInp.value);
+        let opt = document.getElementById('opt');
+        opt.appendChild(inline);
+        opt.appendChild(speedInp);
+        opt.appendChild(button);
     }
 
     random(max, min) {

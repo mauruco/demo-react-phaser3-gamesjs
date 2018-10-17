@@ -11,17 +11,20 @@ class Snake extends Phaser.Scene {
     posY = [];
     grid = []; // [y][x]
     snake = {};
-    cacke = {};
+    apple = {};
+    grape = {};
     cursors = null;
     speed = 8;
     framerate = 0;
     gameOver = false;
+    addBody = 0;
 
     preload() {
 
         this.load.image('grid', 'assets/snake/grid.png');
         this.load.image('body', 'assets/snake/body.png');
         this.load.image('apple', 'assets/snake/apple.png');
+        this.load.image('grape', 'assets/snake/grape.png');
         this.load.image('gameover', 'assets/gameover.png');
         this.load.image('success', 'assets/success.png');
     }
@@ -36,7 +39,10 @@ class Snake extends Phaser.Scene {
         this.posX = this.Ctrl.makePosX(this.gridCellWidth, this.worldWidth);
         this.grid = this.Ctrl.makeGrid(this.posY, this.posX);
         this.gridCount = this.Ctrl.countGrid(this.grid);
-        this.cacke = this.add.sprite(-this.worldWidth, -this.worldHeight, 'apple');
+        this.apple = this.add.sprite(-this.worldWidth, -this.worldHeight, 'apple');
+        this.grape = this.add.sprite(-this.worldWidth, -this.worldHeight, 'grape');
+        this.grape.livespan = 0;
+        this.grape.show = 0;
         
         this.snake = {
             
@@ -46,7 +52,6 @@ class Snake extends Phaser.Scene {
         };
         
         this.snake = this.Ctrl.placeSnake(this.snake, this.worldHeight / 2 + this.gridCellHeight / 2, this.worldWidth - this.gridCellWidth / 2);
-        this.cacke = this.Ctrl.placeCacke(this.snake, this.cacke, this.posY, this.posX);
 
         this.input.keyboard.on('keydown', (e) => {
 
@@ -57,41 +62,73 @@ class Snake extends Phaser.Scene {
     update() {
 
         this.framerate++;
-        if(this.framerate % this.speed === 0 && !this.gameOver){
+        if(this.framerate % this.speed !== 0 || this.gameOver)
+            return;
 
-            this.framerate = 0;
+        this.framerate = 0;
 
-            if(this.snake.nextDirection){
+        if(this.snake.nextDirection){
 
-                this.snake.direction = this.snake.nextDirection; 
-                this.snake.nextDirection = false;
-            }
+            this.snake.direction = this.snake.nextDirection; 
+            this.snake.nextDirection = false;
+        }
 
-            let nextPosition = this.Ctrl.getNexPosition(this.snake, this.gridCellHeight, this.gridCellWidth);
-            let tailPosition = this.Ctrl.getTailPosition(this.snake);
+        let nextPosition = this.Ctrl.getNexPosition(this.snake, this.gridCellHeight, this.gridCellWidth);
+        let tailPosition = this.Ctrl.getTailPosition(this.snake);
 
-            this.gameOver = this.Ctrl.checkCollisionWithSnakeBody(this.snake, nextPosition) || this.Ctrl.checkCollisionWorld(nextPosition, this.worldHeight, this.worldWidth);         
-            if(this.gameOver)
-                return this.Ctrl.gameOver(this.worldHeight, this.worldWidth);
-            
-            let hasEatCacke = this.Ctrl.checkCollisionWithCacke(nextPosition, this.cacke);
-            
-            this.snake = this.Ctrl.moveSnake(this.snake, nextPosition);
-            
-            if(hasEatCacke) {
+        this.gameOver = this.Ctrl.checkCollisionWithSnakeBody(this.snake, nextPosition) || this.Ctrl.checkCollisionWorld(nextPosition, this.worldHeight, this.worldWidth);         
+        if(this.gameOver)
+            return this.Ctrl.gameOver(this.worldHeight, this.worldWidth);
+
+        if(this.grape.livespan <= 0){
+
+            this.grape = this.Ctrl.randomPositionFruit(this.snake, this.grape, this.posY, this.posX);
+            this.grape.livespan = 30;
+        }
+
+        if(this.grape.show 0 && this.grape.livespan > 0){
+
+            if(this.grape.alpha == 0.5)
+                this.grape.alpha = 1.0
+            else
+                this.grape.alpha = 0.5;
                 
-                this.cacke = this.Ctrl.placeCacke(this.snake, this.cacke, this.posY, this.posX);
-                this.snake = this.Ctrl.snakeAddBody(this.snake, tailPosition);
+            this.grape.livespan--;
+
+            if(this.Ctrl.checkCollisionWithFruit(nextPosition, this.grape)){
+            
+                this.grape.y = -100;
+                this.grape.x = -100;
+                this.grape.livespan = 0;
+                this.grape.alpha = 1.0;
+                this.addBody += 3;
             }
-
-            let success = this.Ctrl.checkSuccess(this.snake, this.gridCount);
-
-            if(success) {
-
-                this.gameOver = true;
-                return this.Ctrl.success(this.worldHeight, this.worldWidth);
+        }
+        
+        if(this.apple.x > 0){
+            
+            if(this.Ctrl.checkCollisionWithFruit(nextPosition, this.apple)){
+                
+                this.grape.show++;
+                this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.posY, this.posX);
+                this.addBody++;
             }
+        }
+        
+        if(this.addBody){
 
+            this.snake = this.Ctrl.snakeAddBody(this.snake, tailPosition);
+            this.addBody--;
+        }
+
+        this.snake = this.Ctrl.moveSnake(this.snake, nextPosition);
+
+        let success = this.Ctrl.checkSuccess(this.snake, this.gridCount);
+
+        if(success) {
+
+            this.gameOver = true;
+            return this.Ctrl.success(this.worldHeight, this.worldWidth);
         }
     }
 }

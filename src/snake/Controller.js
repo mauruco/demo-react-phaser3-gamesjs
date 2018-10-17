@@ -131,18 +131,26 @@ const Controller = (scene) => {
             return false;
         },
 
-        checkCollisionWithCacke: (nextPosition, cacke) => {
+        checkCollisionWithFruit: (nextPosition, fruit) => {
 
-            if(nextPosition.x === cacke.x && nextPosition.y === cacke.y)
+            if(nextPosition.x === fruit.x && nextPosition.y === fruit.y)
                 return true;
 
             return false;
         },
-        
-        placeCacke: (snake, cacke, posY, posX) => {
+
+        randomPositionFruit: (snake, fruit, posY, posX) => {
 
             let pY = [...posY];
             let pX = [...posX];
+
+            // todas as coordenadas forma deletas e só restou uma
+            if(pY.length === 1) {
+
+                fruit.y = pY[0];
+                fruit.x = pX[0];
+                return fruit;
+            }
             
             let y = scene.Ctrl.randomArrayEle(posY);
             let x = scene.Ctrl.randomArrayEle(posX);
@@ -151,19 +159,29 @@ const Controller = (scene) => {
 
                 if(x === snake.body[i].x && y === snake.body[i].y){
 
+                    // estou deletando fileiras interas, melhorar isso
                     delete(pY[y]);
                     delete(pX[x]);
                     
-                    return scene.Ctrl.placeCacke(snake, cacke, pY, pX)
+                    return scene.Ctrl.randPositionFruit(snake, fruit, pY, pX)
                 }
             }
 
-            cacke.y = y;
-            cacke.x = x;
-
-            return cacke;
+            fruit.x = x;
+            fruit.y = y;
+            return fruit;
         },
+        
+        getGrape: (snake, grape, posY, posX) => {
 
+            let randNumber = Math.floor(Math.random() * 99) + 1;
+
+            if(randNumber !== 13)
+                return grape;
+
+            return scene.Ctrl.randomPositionFruit(snake, grape, posY, posX);
+        },
+        
         getLastbodyPosition: (snake) => {
 
             return {x: snake.body[snake.body.length-1].x, y: snake.body[snake.body.length-1].y};

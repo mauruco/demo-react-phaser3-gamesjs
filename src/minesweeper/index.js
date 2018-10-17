@@ -6,8 +6,8 @@ class Minesweeper extends Phaser.Scene {
 
     worldWidth = 0;
     worldHeight = 0;
-    boomWidth = 50;
-    boomHeight = 50;
+    boomWidth = 30;
+    boomHeight = 30;
     posX = [];
     posY = [];
     grid = []; // [y][x]
@@ -24,9 +24,9 @@ class Minesweeper extends Phaser.Scene {
     
     preload() {
         
-        this.load.image('empty', 'assets/minesweeper/square_empty.png');
-        this.load.image('boomb', 'assets/minesweeper/square_red.png');
-        this.load.image('ready', 'assets/minesweeper/square_green.png');
+        this.load.image('empty', 'assets/minesweeper/grid.png');
+        this.load.image('boomb', 'assets/minesweeper/bomb.png');
+        this.load.image('ready', 'assets/minesweeper/ready.png');
         this.load.image('gameover', 'assets/gameover.png');
         this.load.image('success', 'assets/success.png');
     }

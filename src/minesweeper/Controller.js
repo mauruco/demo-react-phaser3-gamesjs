@@ -12,9 +12,8 @@ const Controller = (scene, Phaser) => {
             if(document.getElementById('boombvalue'))
                 return;
 
-            let div = document.createElement('div');
-            div.id = 'boombsnumber';
-            div.innerHTML = 'Total Bombs (max 99)<br />';
+            let inline = document.createElement('span');
+            inline.innerHTML = 'Total Bombs (max 99):';
             let inp = document.createElement('input');
             inp.type = 'number';
             inp.value = totalBoombs;
@@ -22,17 +21,19 @@ const Controller = (scene, Phaser) => {
             inp.max = '99';
             let button = document.createElement('button');
             button.innerHTML = 'APPLY';
+            button.className = 'dark';
             button.onclick = () => {
-    
-                if(document.getElementById('boombvalue').value > 99)
-                    document.getElementById('boombvalue').value = 99;
-                let boombs = document.getElementById('boombvalue').value;
-                scene.events.emit('boombsnumberchange', boombs);
+
+                if(inp.value > 99)
+                    inp.value = 99;
+
+                scene.events.emit('boombsnumberchange', inp.value);
             };
-            div.appendChild(inp);
-            div.appendChild(button);
-            let body = document.getElementsByTagName('body')[0];
-            body.appendChild(div);
+
+            let opt = document.getElementById('opt');
+            opt.appendChild(inline);
+            opt.appendChild(inp);
+            opt.appendChild(button);
         },
 
         makePosX: (boomWidth, worldWidth) => {
@@ -195,7 +196,7 @@ const Controller = (scene, Phaser) => {
                 grid[y][x].state = {...state};
 
                 if(state.boombsAllround)
-                    return scene.add.text(x -10, y-15, state.boombsAllround, { fontSize: '32px', fill: '#000' });
+                    return scene.add.text(x -7, y-12, state.boombsAllround, { fontSize: '24px', fill: '#000' });
 
     
                 // topLeft
