@@ -3,13 +3,9 @@ import Controller from './Controller';
 
 class Snake extends Phaser.Scene {
 
-    worldWidth = 0;
-    worldHeight = 0;
-    gridCellWidth = 20;
-    gridCellHeight = 20;
-    posX = [];
-    posY = [];
+    worldWH = 0;
     grid = []; // [y][x]
+    cell = 20;
     snake = {};
     apple = {};
     grape = {};
@@ -18,6 +14,22 @@ class Snake extends Phaser.Scene {
     framerate = 0;
     gameOver = false;
     addBody = 0;
+    points = null;
+    ready = false;
+    speed = 10; // 0-60 (60 == 60fps)
+    framerate = 60/this.speed;
+    actualFrame = 1;
+
+    static config = () => {
+
+        return {
+            type: Phaser.AUTO,
+            width: 600,
+            height: 600,
+            backgroundColor: 0xEEEEEE,
+            scene: [Snake]
+        };
+    };
 
     preload() {
 
@@ -27,45 +39,52 @@ class Snake extends Phaser.Scene {
         this.load.image('grape', 'assets/snake/grape.png');
         this.load.image('gameover', 'assets/gameover.png');
         this.load.image('success', 'assets/success.png');
+        this.load.image('ready', 'assets/ready.png');
     }
 
     create() {
         
         this.Ctrl = Controller(this);
+        this.points = this.Ctrl.createPoints();
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.worldWidth = this.game.config.width;
-        this.worldHeight = this.game.config.height;
-        this.posY = this.Ctrl.makePosY(this.gridCellHeight, this.worldHeight);
-        this.posX = this.Ctrl.makePosX(this.gridCellWidth, this.worldWidth);
-        this.grid = this.Ctrl.makeGrid(this.posY, this.posX);
+        this.worldWH = this.game.config.width;
+        this.grid = this.Ctrl.makeGrid(this.worldWH, this.cell);
         this.gridCount = this.Ctrl.countGrid(this.grid);
-        this.apple = this.add.sprite(-this.worldWidth, -this.worldHeight, 'apple');
-        this.grape = this.add.sprite(-this.worldWidth, -this.worldHeight, 'grape');
+        this.apple = this.add.sprite(-this.worldWH, -this.worldWH, 'apple');
+        this.grape = this.add.sprite(-this.worldWH, -this.worldWH, 'grape');
         this.grape.livespan = 0;
         this.grape.show = 0;
         
         this.snake = {
             
             body: [],
-            direction: 'left',
-            nextDirection: false
+            direction: 'right',
+            nextDirection: 'right'
         };
         
-        this.snake = this.Ctrl.placeSnake(this.snake, this.worldHeight / 2 + this.gridCellHeight / 2, this.worldWidth - this.gridCellWidth / 2);
+        this.snake = this.Ctrl.snakeAddBody(this.snake, {x: this.cell/2, y: this.cell/2});
+        this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.grid);
 
         this.input.keyboard.on('keydown', (e) => {
 
-            this.snake = this.Ctrl.inputHandler(e, this.snake);
+            this.snake = this.Ctrl.directionHandler(e, this.snake);
         });
+
+        // ready
+        this.ready = this.Ctrl.getReady(this.worldWH, (ready) => this.ready = ready);
     }
 
     update() {
 
-        this.framerate++;
-        if(this.framerate % this.speed !== 0 || this.gameOver)
+        if(!this.ready || this.gameOver)
             return;
 
-        this.framerate = 0;
+        this.actualFrame++;
+
+        if(this.actualFrame <= this.framerate)
+            return;
+
+        this.actualFrame = 1;
 
         if(this.snake.nextDirection){
 
@@ -73,63 +92,72 @@ class Snake extends Phaser.Scene {
             this.snake.nextDirection = false;
         }
 
-        let nextPosition = this.Ctrl.getNexPosition(this.snake, this.gridCellHeight, this.gridCellWidth);
+        let nextPosition = this.Ctrl.getNexPosition(this.snake, this.cell);
         let tailPosition = this.Ctrl.getTailPosition(this.snake);
 
-        this.gameOver = this.Ctrl.checkCollisionWithSnakeBody(this.snake, nextPosition) || this.Ctrl.checkCollisionWorld(nextPosition, this.worldHeight, this.worldWidth);         
+        this.gameOver = this.Ctrl.checkCollisionWithSnakeBody(this.snake, nextPosition) || this.Ctrl.checkCollisionWorld(nextPosition, this.worldWH);
+
         if(this.gameOver)
-            return this.Ctrl.gameOver(this.worldHeight, this.worldWidth);
+            return this.Ctrl.gameOver(this.worldWH);
 
-        if(this.grape.livespan <= 0){
 
-            this.grape = this.Ctrl.randomPositionFruit(this.snake, this.grape, this.posY, this.posX);
-            this.grape.livespan = 30;
-        }
-
-        if(this.grape.show 0 && this.grape.livespan > 0){
-
-            if(this.grape.alpha == 0.5)
-                this.grape.alpha = 1.0
-            else
-                this.grape.alpha = 0.5;
-                
-            this.grape.livespan--;
-
-            if(this.Ctrl.checkCollisionWithFruit(nextPosition, this.grape)){
+        if(this.Ctrl.checkCollisionWithFruit(nextPosition, this.apple)){
             
-                this.grape.y = -100;
-                this.grape.x = -100;
-                this.grape.livespan = 0;
-                this.grape.alpha = 1.0;
-                this.addBody += 3;
-            }
-        }
-        
-        if(this.apple.x > 0){
-            
-            if(this.Ctrl.checkCollisionWithFruit(nextPosition, this.apple)){
-                
+            if(this.grape.livespan <= 0)
                 this.grape.show++;
-                this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.posY, this.posX);
-                this.addBody++;
-            }
+            
+            this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.grid);
+            this.addBody++;
+
+            this.framerate = this.Ctrl.increaseSpeed(++this.speed);
+            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
+            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
+            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
+            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
+            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
+            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
+        }
+    
+        this.grape.livespan--;
+
+        if(this.grape.livespan <= 0 ) {
+
+            this.grape.y = -this.worldWH;
+            this.grape.x = -this.worldWH;
+        }
+
+        if(this.grape.show > 5){
+
+            this.grape = this.Ctrl.randomPositionFruit(this.snake, this.grape, this.grid);
+            this.grape.livespan = 30;
+            this.grape.show = 0;
+        }
+
+        if(this.grape.x)
+            this.grape = this.Ctrl.changeAlpha(this.grape);
+
+        if(this.Ctrl.checkCollisionWithFruit(nextPosition, this.grape)){
+        
+            this.grape.livespan = 0;
+            this.grape.show = 0;
+            this.grape.alpha = 1.0;
+            this.addBody += 5;
         }
         
         if(this.addBody){
 
+            this.points.value++;
             this.snake = this.Ctrl.snakeAddBody(this.snake, tailPosition);
             this.addBody--;
         }
+        
+        if(this.Ctrl.checkSuccess(this.snake, this.gridCount)) {
+            
+            this.gameOver = true;
+            return this.Ctrl.success(this.worldWH, this.worldWH);
+        }
 
         this.snake = this.Ctrl.moveSnake(this.snake, nextPosition);
-
-        let success = this.Ctrl.checkSuccess(this.snake, this.gridCount);
-
-        if(success) {
-
-            this.gameOver = true;
-            return this.Ctrl.success(this.worldHeight, this.worldWidth);
-        }
     }
 }
 

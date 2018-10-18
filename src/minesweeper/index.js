@@ -14,6 +14,17 @@ class Minesweeper extends Phaser.Scene {
     totalBoombs = 20;
     totalPositions = 0;
 
+    static config = () => {
+
+        return {
+            type: Phaser.AUTO,
+            width: 600,
+            height: 600,
+            backgroundColor: 0xEEEEEE,
+            scene: [Minesweeper]
+        };
+    };
+
     init(params) {
 
         if(!params || !params.totalBoombs)

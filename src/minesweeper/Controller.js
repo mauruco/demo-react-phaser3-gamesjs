@@ -1,4 +1,11 @@
-const Controller = (scene, Phaser) => {
+const Controller = (scene) => {
+
+    // init
+    setTimeout(() => {
+
+        let canvas = document.getElementsByTagName('canvas')[0];
+        canvas.className = 'canvas-border';
+    });
 
     return {
 

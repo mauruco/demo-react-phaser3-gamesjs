@@ -11,19 +11,19 @@ canvas {
   margin-left: -300px;
   width: 600px;
 }
-#menu, #opt {
+#menu, #opt , .opt{
   position: absolute;
   top: 10px;
   left: 10px;
   margin: 0;
   padding: 0;
 }
-#opt {
+#opt, .opt {
   right: 10px;
   left: auto;
   text-align: right;
 }
-#menu a, #opt a, #opt button{
+#menu a, #opt a, #opt button, .opt a, .opt button{
   display: inline-block;
   text-decoration: none;
   padding: 5px 10px;
@@ -34,27 +34,33 @@ canvas {
   background-color: #FFFFFF;
   border-radius: 4px;
 }
-#menu a:hover, #opt a:hover, #opt button:hover{
+#menu a:hover, #menu a.selected, #opt a:hover, #opt a.selected, #opt button:hover, #opt button.selected, .opt a:hover, .opt a.selected, .opt button:hover, .opt button.selected{
   background-color: #EFEFEF;
 }
-#menu a.dark, #opt a.dark, #opt button.dark{
+#menu a.dark, #opt a.dark, #opt button.dark, .opt a.dark, .opt button.dark{
   background-color: #333333;
   color: #EEEEEE;
 }
-#menu a.dark:hover, #opt a.dark:hover, #opt button.dark:hover{
+#menu a.dark:hover, #opt a.dark:hover, #opt button.dark:hover, .opt a.dark:hover, .opt button.dark:hover{
   background-color: #000000;
 }
-#opt input[type=number] {
+#opt input[type=number], .opt input[type=number]{
   padding: 5px 10px;
   max-width: 50px;
   border-radius: 4px;
   border: 1px solid #666666;
 }
-#opt a, #opt button {
+#opt a, #opt button, .opt a, .opt button {
   margin-right: 0;
 }
 .canvas-border {
   border: 1px solid #333333;
+}
+input.points {
+  background-color: transparent;
+  color: #333333;
+  border: 1px solid transparent !important;
+  font-size: 1em;
 }
 #speed{
   position: absolute;

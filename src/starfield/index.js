@@ -14,6 +14,17 @@ class Starfield extends Phaser.Scene {
         stars: []
     };
 
+    static config = () => {
+
+        return {
+            type: Phaser.AUTO,
+            width: 600,
+            height: 600,
+            backgroundColor: 0xEEEEEE,
+            scene: [Starfield]
+        };
+    };
+
     controllers() {
 
         let inline = document.createElement('span');

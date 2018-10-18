@@ -1,49 +1,63 @@
 const Controller = (scene) => {
 
+    // init
+    setTimeout(() => {
+
+        let canvas = document.getElementsByTagName('canvas')[0];
+        canvas.className = 'canvas-border';
+    });
+
     return {
+
+        createPoints: () => {
+
+            let div = document.createElement('div');
+            let body = document.getElementsByTagName('body')[0];
+            let span = document.createElement('span');
+            span.innerHTML = 'POINTS: '
+            let points = document.createElement('input');
+            points.type = 'number';
+            points.disabled = true;
+            points.className = 'points';
+            points.value = 0;
+            div.appendChild(span);
+            div.appendChild(points);
+            body.appendChild(div);
+            div.className = 'opt';
+            
+            let canvas = document.getElementsByTagName('canvas')[0];
+            canvas = canvas.getBoundingClientRect();
+            div.style.top = (canvas.y - 35)+'px';
+            div.style.left = canvas.x+'px';
+            div.style.right = 'auto';
+            return points;
+        },
 
         randomArrayEle: (arr) => {
     
             return arr[Math.floor(Math.random() * arr.length)];
         },
 
-        makePosX: (gridCellWidth, worldWidth) => {
+        makeGrid: (worldWH, cell) => {
 
-            let posX = [];
-            let x = gridCellWidth / 2;
-            for(let i = 0; i < worldWidth / gridCellWidth; i++){
-    
-                posX.push(x);
-                x += gridCellWidth;
-            }
+            let grid = [];
+            let max = Math.floor(worldWH / cell);
 
-            return posX;
-        },
+            for(let y = 1; y <= max; y++){
+                grid[(cell*y)-(cell/2)] = [];
+                for(let x = 1; x <= max; x++)
+                    grid[(cell*y)-(cell/2)][(cell*x)-(cell/2)] = scene.add.sprite((cell*x)-(cell/2), (cell*y)-(cell/2), 'grid');
 
-        makePosY: (gridCellHeight, worldHeight) => {
-
-            let posY = [];
-            let y = gridCellHeight / 2;
-            for(let i = 0; i < worldHeight / gridCellHeight; i++){
-    
-                posY.push(y);
-                y += gridCellHeight;
-            }
-
-            return posY;
-        },
-
-        makeGrid: (posY, posX) => {
-
-            let grid = []; 
-            for(let y in posY) {
-
-                grid[posY[y]] = [];
-                for(let x in posX)
-                    grid[posY[y]][posX[x]] = scene.add.sprite(posX[x], posY[y], 'grid');
             }
 
             return grid;
+        },
+
+        walkGrid: (grid, callBack) => {
+
+            for(let psy in grid)
+                for(let psx in grid[psy])
+                    callBack(psy, psx);
         },
 
         countGrid: (grid) => {
@@ -56,13 +70,7 @@ const Controller = (scene) => {
             return count;
         },
 
-        placeSnake: (snake, y, x) => {
-
-            snake.body.push(scene.add.sprite(x, y, 'body'));
-            return snake;
-        },
-
-        inputHandler: (e, snake) => {
+        directionHandler: (e, snake) => {
 
             if(e.key === 'ArrowLeft' && snake.direction !== 'left' && snake.direction !== 'right' && !snake.nextDirection)
                 snake.nextDirection = 'left';
@@ -79,22 +87,23 @@ const Controller = (scene) => {
             return snake;
         },
 
-        getNexPosition: (snake, gridCellHeight, gridCellWidth) => {
+        getNexPosition: (snake, cell) => {
 
-            let y = snake.body[0].y;
-            let x = snake.body[0].x;
+            let snakeHead = snake.body[0];
+            let y = snakeHead.y;
+            let x = snakeHead.x;
 
             if(snake.direction === 'left')
-                x = x - gridCellWidth;
+                x = parseInt(snakeHead.x) - cell;
             
             if(snake.direction === 'right')
-                x = x + gridCellWidth;
-            
+                x = parseInt(snakeHead.x) + cell;
+        
             if(snake.direction === 'up')
-                y = y - gridCellHeight;
+                y = parseInt(snakeHead.y) - cell;
             
             if(snake.direction === 'down')
-                y = y + gridCellHeight;
+                y = parseInt(snakeHead.y) + cell;
 
             return {x: x, y: y};
         },
@@ -123,9 +132,9 @@ const Controller = (scene) => {
             return false;
         },
 
-        checkCollisionWorld: (nextPosition, worldHeight, worldWidth) => {
+        checkCollisionWorld: (nextPosition, worldWH) => {
 
-            if(nextPosition.x <= 0 || nextPosition.x >= worldWidth || nextPosition.y <= 0 || nextPosition.y >= worldHeight)
+            if(nextPosition.x <= 0 || nextPosition.x >= worldWH || nextPosition.y <= 0 || nextPosition.y >= worldWH)
                 return true;
 
             return false;
@@ -133,53 +142,45 @@ const Controller = (scene) => {
 
         checkCollisionWithFruit: (nextPosition, fruit) => {
 
-            if(nextPosition.x === fruit.x && nextPosition.y === fruit.y)
+            if(nextPosition.x === parseInt(fruit.x) && nextPosition.y === parseInt(fruit.y))
                 return true;
 
             return false;
         },
 
-        randomPositionFruit: (snake, fruit, posY, posX) => {
+        randomPositionFruit: (snake, fruit, grid) => {
 
-            let pY = [...posY];
-            let pX = [...posX];
+            let possiblePos = [];
+            scene.Ctrl.walkGrid(grid, (psy, psx) => {
 
-            // todas as coordenadas forma deletas e só restou uma
-            if(pY.length === 1) {
-
-                fruit.y = pY[0];
-                fruit.x = pX[0];
-                return fruit;
-            }
-            
-            let y = scene.Ctrl.randomArrayEle(posY);
-            let x = scene.Ctrl.randomArrayEle(posX);
-
-            for(let i = 0; i < snake.body.length; i++){
-
-                if(x === snake.body[i].x && y === snake.body[i].y){
-
-                    // estou deletando fileiras interas, melhorar isso
-                    delete(pY[y]);
-                    delete(pX[x]);
+                for(let i = 0; i < snake.body.length; i++)
+                    if(snake.body.x != psx && snake.body.y != psy)
+                        possiblePos.push([psy,psx]);
+            });
                     
-                    return scene.Ctrl.randPositionFruit(snake, fruit, pY, pX)
-                }
-            }
-
-            fruit.x = x;
-            fruit.y = y;
+            let random = scene.Ctrl.randomArrayEle(possiblePos);
+            fruit.y = random[0];
+            fruit.x = random[1];
             return fruit;
         },
         
-        getGrape: (snake, grape, posY, posX) => {
+        getGrape: (snake, grape, psy, psx) => {
 
             let randNumber = Math.floor(Math.random() * 99) + 1;
 
             if(randNumber !== 13)
                 return grape;
 
-            return scene.Ctrl.randomPositionFruit(snake, grape, posY, posX);
+            return scene.Ctrl.randomPositionFruit(snake, grape, psy, psx);
+        },
+
+        changeAlpha: (fruit) => {
+
+            if(fruit.alpha > 0.5)
+                fruit.alpha = 0.5;
+            else
+                fruit.alpha = 1.0;
+            return fruit;
         },
         
         getLastbodyPosition: (snake) => {
@@ -195,49 +196,47 @@ const Controller = (scene) => {
 
         increaseSpeed: (snake, speed) => {
 
-            if(snake.body.length > 4)
-                speed = 7;
-
-            if(snake.body.length > 9)
-                speed = 6;
-
-            if(snake.body.length > 14)
-                speed = 5;
-
-            if(snake.body.length > 19)
-                speed = 4;
-
-            return speed;
+            return parseInt(60/speed);
         },
 
         checkSuccess: (snake, gridCount) => {
 
-            if(snake.body.length === gridCount)
+            if(snake.body.length === (gridCount - 1))
                 return true;
 
             return false;
         },
 
-        success: (worldHeight, worldWidth) => {
+        getReady: (worldWH, callBack) => {
+
+            let sprite = scene.add.sprite(worldWH / 2, worldWH / 2, 'ready').setInteractive({ useHandCursor: true });
+            sprite.on('pointerover', () => sprite.alpha = 0.9);
+            sprite.on('pointerout', () => sprite.alpha = 1);
+            sprite.on('pointerup', () => {
+
+                sprite.destroy();
+                callBack(true);
+            });
+        },
+
+        success: (worldWH) => {
 
             setTimeout(()=>{
                 
-                let sprite = scene.add.sprite(worldWidth / 2, worldHeight / 2, 'success').setInteractive({ useHandCursor: true });
+                let sprite = scene.add.sprite(worldWH / 2, worldWH / 2, 'success').setInteractive({ useHandCursor: true });
                 sprite.on('pointerover', () => sprite.alpha = 0.9);
                 sprite.on('pointerout', () => sprite.alpha = 1);
-                sprite.on('pointerup', () => window.location.reload());
                 sprite.on('pointerup', () => window.location.reload());
             });
         },
         
-        gameOver: (worldHeight, worldWidth)  => {
+        gameOver: (worldWH)  => {
             
             setTimeout(()=>{
     
-                let sprite = scene.add.sprite(worldWidth / 2, worldHeight / 2, 'gameover').setInteractive({ useHandCursor: true });
+                let sprite = scene.add.sprite(worldWH / 2, worldWH / 2, 'gameover').setInteractive({ useHandCursor: true });
                 sprite.on('pointerover', () => sprite.alpha = 0.9);
                 sprite.on('pointerout', () => sprite.alpha = 1);
-                sprite.on('pointerup', () => window.location.reload());
                 sprite.on('pointerup', () => window.location.reload());
             });
         }
