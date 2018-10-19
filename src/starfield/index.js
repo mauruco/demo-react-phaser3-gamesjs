@@ -2,7 +2,7 @@ import Phaser from '../Phaser';
 
 class Starfield extends Phaser.Scene {
 
-    stars = new Array(100).fill(1);
+    stars = 100;
     worldWidth = 0;
     worldHeight = 0;
     speed = 10;
@@ -25,8 +25,17 @@ class Starfield extends Phaser.Scene {
         };
     };
 
+    constructor() {
+
+        // scene key
+        super({key: 'Starfield'});
+    }
+
     controllers() {
 
+        let opt = document.createElement('div');
+        let body = document.getElementsByTagName('body')[0];
+        opt.className = 'opt';
         let inline = document.createElement('span');
         inline.className = 'inline';
         inline.innerHTML = 'SPEED:';
@@ -39,10 +48,15 @@ class Starfield extends Phaser.Scene {
         button.innerHTML = 'APPLY';
         this.events = new Phaser.Events.EventEmitter();
         button.onclick = () =>this.events.emit('speedChange', speedInp.value);
-        let opt = document.getElementById('opt');
         opt.appendChild(inline);
         opt.appendChild(speedInp);
         opt.appendChild(button);
+        body.appendChild(opt);
+        let canvas = document.getElementsByTagName('canvas')[0];
+        canvas = canvas.getBoundingClientRect();
+        opt.style.top = (canvas.y - 40)+'px';
+        opt.style.left = canvas.x+'px';
+        opt.style.right = 'auto';
     }
 
     random(max, min) {
@@ -52,11 +66,11 @@ class Starfield extends Phaser.Scene {
 
     createStars() {
      
-        this.stars.map((_) => {
+        for(let i = 0; i < this.stars; i++){
 
             // eu crio estrelas tanto em coordenadas positivas como negativas
             let star = {
-                color: 0xFF0000,
+                color: 0xffffff,
                 size: 1,
                 x: this.random((this.worldWidth / 2), - (this.worldWidth / 2)),
                 y: this.random((this.worldHeight / 2), - (this.worldHeight / 2)),
@@ -66,8 +80,7 @@ class Starfield extends Phaser.Scene {
                 graphLine: null
             };
 
-            // starObj.x e starObj.y eu traduzo as coodenardas originas para a tela visivel (translate)
-            star.starObj = this.add.circle(star.x + (this.worldWidth / 2), star.y + (this.worldHeight / 2), star.size, star.color);
+            star.starObj = this.add.circle(star.x, star.y, star.size, star.color);
 
             star.startX = 0;
             star.startY = 0;
@@ -77,7 +90,7 @@ class Starfield extends Phaser.Scene {
             star.graphLine = this.add.graphics({ lineStyle: {width: 1, color: 0x000000} });
 
             this.state.stars.push(star);
-        });   
+        }
     }
 
     moveStars() {
@@ -91,8 +104,8 @@ class Starfield extends Phaser.Scene {
             // aumentando comforme a distancia
             star.starObj.setScale(perspective*3);
             
-            star.starObj.x = (star.x * perspective) + (this.worldWidth / 2);
-            star.starObj.y = (star.y * perspective) + (this.worldHeight / 2);
+            star.starObj.x = (star.x * perspective);
+            star.starObj.y = (star.y * perspective);
             // eu diminuo a distance da estrela por speed
             star.z += parseInt(this.speed);
 
@@ -106,20 +119,21 @@ class Starfield extends Phaser.Scene {
             // linhas
             star.graphLine.destroy();
             star.line.setTo(star.starObj.x, star.starObj.y, star.startX, star.startY);
-            star.graphLine = this.add.graphics({ lineStyle: {width: 1, color: 0x000000} });
+            star.graphLine = this.add.graphics({ lineStyle: {width: 1, color: 0x4d4d00} });
             star.graphLine.strokeLineShape(star.line);
 
 
             // reset to origin
             if(star.z >= 0){
 
-                // sempre traduzindo ascoordenadas originais para a tela visivel (translate)
-                star.starObj.x = star.x + (this.worldWidth / 2);
-                star.starObj.y = star.y + (this.worldHeight / 2);
+                star.starObj.x = star.x;
+                star.starObj.y = star.y;
                 star.z = this.random(this.worldLength, 0);
                 star.resetZ = true;
                 star.starObj.setScale(1);
             }
+
+            return star;
         });
     }
     
@@ -134,6 +148,11 @@ class Starfield extends Phaser.Scene {
         this.worldHeight = this.game.config.height;
         this.worldLength = -1700;
         this.createStars();
+
+        let camera = this.cameras.add(0, 0, this.worldWH, this.worldWH);
+        camera.transparent = false;
+        camera.setBackgroundColor(0x000000);
+        camera.centerOn(0,0);
     }
 
     update() {

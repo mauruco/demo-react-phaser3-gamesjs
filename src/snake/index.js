@@ -10,15 +10,13 @@ class Snake extends Phaser.Scene {
     apple = {};
     grape = {};
     cursors = null;
-    speed = 8;
-    framerate = 0;
     gameOver = false;
     addBody = 0;
     points = null;
     ready = false;
-    speed = 10; // 0-60 (60 == 60fps)
+    speed = 4.0; // 1-60 (60 == 60fps)
     framerate = 60/this.speed;
-    actualFrame = 1;
+    actuelFrame = 0;
 
     static config = () => {
 
@@ -30,6 +28,12 @@ class Snake extends Phaser.Scene {
             scene: [Snake]
         };
     };
+
+    constructor() {
+
+        // scene key
+        super('snake');
+    }
 
     preload() {
 
@@ -63,7 +67,7 @@ class Snake extends Phaser.Scene {
         };
         
         this.snake = this.Ctrl.snakeAddBody(this.snake, {x: this.cell/2, y: this.cell/2});
-        this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.grid);
+        this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.grid, {x:0, y:0}, {x:0, y:0});
 
         this.input.keyboard.on('keydown', (e) => {
 
@@ -79,12 +83,11 @@ class Snake extends Phaser.Scene {
         if(!this.ready || this.gameOver)
             return;
 
-        this.actualFrame++;
-
-        if(this.actualFrame <= this.framerate)
+        this.actuelFrame++;
+        if(this.actuelFrame !== this.framerate)
             return;
 
-        this.actualFrame = 1;
+        this.actuelFrame = 1;
 
         if(this.snake.nextDirection){
 
@@ -106,18 +109,15 @@ class Snake extends Phaser.Scene {
             if(this.grape.livespan <= 0)
                 this.grape.show++;
             
-            this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.grid);
+            this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.grid, nextPosition, tailPosition);
             this.addBody++;
 
-            this.framerate = this.Ctrl.increaseSpeed(++this.speed);
-            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
-            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
-            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
-            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
-            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
-            // this.framerate = this.Ctrl.increaseSpeed(++this.speed);
+            this.speed += 0.04;
+            this.framerate = Math.ceil(60 / this.speed);
+            if(this.framerate > 10)
+                this.framerate = 10;
         }
-    
+
         this.grape.livespan--;
 
         if(this.grape.livespan <= 0 ) {
@@ -128,7 +128,7 @@ class Snake extends Phaser.Scene {
 
         if(this.grape.show > 5){
 
-            this.grape = this.Ctrl.randomPositionFruit(this.snake, this.grape, this.grid);
+            this.grape = this.Ctrl.randomPositionFruit(this.snake, this.grape, this.grid, nextPosition, tailPosition);
             this.grape.livespan = 30;
             this.grape.show = 0;
         }

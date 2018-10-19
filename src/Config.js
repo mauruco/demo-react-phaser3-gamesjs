@@ -8,7 +8,7 @@ const Config = () => {
     }
         
     return {
-        url: 'http://localhost:3000'
+        url: 'https://htmlpreview.github.io/?https://github.com/mauruco/phaser3/blob/master/index.html'
     };
 };
 

@@ -19,6 +19,9 @@ const Controller = (scene) => {
             if(document.getElementById('boombvalue'))
                 return;
 
+            let opt = document.createElement('div');
+            let body = document.getElementsByTagName('body')[0];
+            opt.className = 'opt';
             let inline = document.createElement('span');
             inline.innerHTML = 'Total Bombs (max 99):';
             let inp = document.createElement('input');
@@ -37,10 +40,16 @@ const Controller = (scene) => {
                 scene.events.emit('boombsnumberchange', inp.value);
             };
 
-            let opt = document.getElementById('opt');
             opt.appendChild(inline);
             opt.appendChild(inp);
             opt.appendChild(button);
+            body.appendChild(opt);
+            
+            let canvas = document.getElementsByTagName('canvas')[0];
+            canvas = canvas.getBoundingClientRect();
+            opt.style.top = (canvas.y - 40)+'px';
+            opt.style.left = canvas.x+'px';
+            opt.style.right = 'auto';
         },
 
         makePosX: (boomWidth, worldWidth) => {

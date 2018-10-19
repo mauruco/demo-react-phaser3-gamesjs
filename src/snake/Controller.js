@@ -11,7 +11,8 @@ const Controller = (scene) => {
 
         createPoints: () => {
 
-            let div = document.createElement('div');
+            let opt = document.createElement('div');
+            opt.className = 'opt';
             let body = document.getElementsByTagName('body')[0];
             let span = document.createElement('span');
             span.innerHTML = 'POINTS: '
@@ -20,16 +21,15 @@ const Controller = (scene) => {
             points.disabled = true;
             points.className = 'points';
             points.value = 0;
-            div.appendChild(span);
-            div.appendChild(points);
-            body.appendChild(div);
-            div.className = 'opt';
+            opt.appendChild(span);
+            opt.appendChild(points);
+            body.appendChild(opt);
             
             let canvas = document.getElementsByTagName('canvas')[0];
             canvas = canvas.getBoundingClientRect();
-            div.style.top = (canvas.y - 35)+'px';
-            div.style.left = canvas.x+'px';
-            div.style.right = 'auto';
+            opt.style.top = (canvas.y - 35)+'px';
+            opt.style.left = canvas.x+'px';
+            opt.style.right = 'auto';
             return points;
         },
 
@@ -148,14 +148,16 @@ const Controller = (scene) => {
             return false;
         },
 
-        randomPositionFruit: (snake, fruit, grid) => {
+        randomPositionFruit: (snake, fruit, grid, nextPosition, tailPosition) => {
 
             let possiblePos = [];
             scene.Ctrl.walkGrid(grid, (psy, psx) => {
 
                 for(let i = 0; i < snake.body.length; i++)
-                    if(snake.body.x != psx && snake.body.y != psy)
-                        possiblePos.push([psy,psx]);
+                    if(parseInt(snake.body.x) !== psx && parseInt(snake.body.y) !== psy)
+                        if(psy !== nextPosition.y && psx !== nextPosition.x)
+                            if(psy !== tailPosition.y && psx !== tailPosition.x)
+                                possiblePos.push([psy,psx]);
             });
                     
             let random = scene.Ctrl.randomArrayEle(possiblePos);
@@ -194,9 +196,23 @@ const Controller = (scene) => {
             return snake;
         },
 
-        increaseSpeed: (snake, speed) => {
+        increaseSpeed: (snake, speeds) => {
 
-            return parseInt(60/speed);
+            let size = snake.body.length;
+            let speed = speeds[4];
+
+            if(size >= 5)
+                speed = speeds[5]
+            if(size >= 15)
+                speed = speeds[6]
+            if(size >= 40)
+                speed = speeds[7]
+            if(size >= 60)
+                speed = speeds[8]
+            if(size >= 80)
+                speed = speeds[9]
+
+            return 60/speed;
         },
 
         checkSuccess: (snake, gridCount) => {

@@ -1,7 +1,13 @@
 html, body{
+  padding: 0;
+  margin: 0;
   background-color: #EEEEEE;
   width: 100%;
   font-family: Lato, "Lucida Grande", Tahoma, Sans-Serif;
+  width: 100%;
+  height:100%;
+  background-repeat: no-repeat;
+  background-color: #99B628;
 }
 canvas {
   position: absolute;

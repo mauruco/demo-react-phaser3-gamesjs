@@ -25,6 +25,12 @@ class Minesweeper extends Phaser.Scene {
         };
     };
 
+    constructor() {
+
+        // scene key
+        super('minesweeper');
+    }
+
     init(params) {
 
         if(!params || !params.totalBoombs)
