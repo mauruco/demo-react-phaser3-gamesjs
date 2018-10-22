@@ -6,6 +6,7 @@ import Snake from './snake';
 import Brick from './brick';
 import Solar from './solar';
 import Debuger from './Debuger';
+import Natur from './natur';
 
 const SceneLoader = () => {
 
@@ -45,6 +46,11 @@ const SceneLoader = () => {
     aSolar.innerHTML = 'SOLAR SYSTEM';
     aSolar.addEventListener('click', (e) => goTo(e, '#solar'));
     
+    let aNatur = document.createElement('a');
+    aNatur.href = '#naturforce';
+    aNatur.innerHTML = 'NATUR FORCE';
+    aNatur.addEventListener('click', (e) => goTo(e, '#naturforce'));
+    
     let menu = document.createElement('menu');
     let opt = document.createElement('opt');
     let body = document.getElementsByTagName('body')[0];
@@ -78,6 +84,9 @@ const SceneLoader = () => {
         aSolar.className = 'selected';
         opt.style.display = 'none';
     }
+    
+    if(hash === '#naturforce')
+        new Phaser.Game(Natur.config());
 
     opt.id = 'opt';
     opt.innerHTML = 'OPTIONS<br />';
@@ -88,6 +97,7 @@ const SceneLoader = () => {
     menu.appendChild(aSnake);
     // menu.appendChild(aBrick);
     menu.appendChild(aSolar);
+    // menu.appendChild(aNatur);
     body.appendChild(menu);
     body.appendChild(opt);
     body.style.backgroundImage = 'url("assets/background.jpg")';
