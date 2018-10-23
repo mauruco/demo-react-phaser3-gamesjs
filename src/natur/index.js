@@ -1,5 +1,5 @@
 import Phaser from '../Phaser';
-import Vector from './Vector';
+import Vector from '../Vector';
 import Ball from './Ball';
 
 class Natur extends Phaser.Scene {
@@ -11,13 +11,7 @@ class Natur extends Phaser.Scene {
             width: 600,
             height: 600,
             backgroundColor: 0xFFFFFF,
-            scene: [Natur],
-            physics: {
-                default: 'arcade',
-                arcade: {
-                    gravity: { y: 10 }
-                }
-            }
+            scene: [Natur]
         };
     };
 

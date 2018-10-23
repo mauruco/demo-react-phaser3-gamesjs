@@ -1,5 +1,5 @@
 import Phaser from '../Phaser';
-import Vector from './Vector';
+import Vector from '../Vector';
 
 class Ball extends Vector{
 

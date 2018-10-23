@@ -7,6 +7,8 @@ import Brick from './brick';
 import Solar from './solar';
 import Debuger from './Debuger';
 import Natur from './natur';
+import Wave from './wave';
+import Noise from './perlinnoise';
 
 const SceneLoader = () => {
 
@@ -51,6 +53,16 @@ const SceneLoader = () => {
     aNatur.innerHTML = 'NATUR FORCE';
     aNatur.addEventListener('click', (e) => goTo(e, '#naturforce'));
     
+    let aWave = document.createElement('a');
+    aWave.href = '#wave';
+    aWave.innerHTML = 'WAVE';
+    aWave.addEventListener('click', (e) => goTo(e, '#wave'));
+
+    let aNoise = document.createElement('a');
+    aNoise.href = '#noise';
+    aNoise.innerHTML = 'PERLIN NOISE';
+    aNoise.addEventListener('click', (e) => goTo(e, '#noise'));
+    
     let menu = document.createElement('menu');
     let opt = document.createElement('opt');
     let body = document.getElementsByTagName('body')[0];
@@ -87,6 +99,12 @@ const SceneLoader = () => {
     
     if(hash === '#naturforce')
         new Phaser.Game(Natur.config());
+    
+    if(hash === '#wave')
+        new Phaser.Game(Wave.config());
+    
+    if(hash === '#noise')
+        new Phaser.Game(Noise.config());
 
     opt.id = 'opt';
     opt.innerHTML = 'OPTIONS<br />';
@@ -97,7 +115,9 @@ const SceneLoader = () => {
     menu.appendChild(aSnake);
     // menu.appendChild(aBrick);
     menu.appendChild(aSolar);
-    // menu.appendChild(aNatur);
+    menu.appendChild(aNatur);
+    menu.appendChild(aWave);
+    menu.appendChild(aNoise);
     body.appendChild(menu);
     body.appendChild(opt);
     body.style.backgroundImage = 'url("assets/background.jpg")';
