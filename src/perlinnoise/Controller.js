@@ -1,99 +1,118 @@
 import Phaser from '../Phaser';
 import Line from './Line';
+import Vector from '../Vector';
+
 const Controller = (scene) => {
 
     return {
 
         simpleNoiseGraph: () => {
 
-            scene.noise  = window.noise;
-            scene.noise.seed(Math.random());
-    
             scene.points = [];
-    
+
             for(let i = 0; i < 600; i++){
     
                 let point = new Phaser.Geom.Point(0,0);
                 scene.points.push(point);
             }
             
-            scene.graph = scene.add.graphics();
-            scene.graph.setDefaultStyles(scene.defaultStyles);
     
-            scene.yoff = 100;
-            scene.amplitude = 150;
+            scene.xff = 300;
+            scene.yff = 0;
+            scene.amplitude = 50;
+            scene.height = 600;
+        },
+
+        simpleNoiseGraphUpdate: () => {
+
+            for(let x = 0; x < scene.points.length; x++) {
+
+                let y =  scene.noise.simplex2(scene.xff, scene.yff);
     
-            for(let x = 1; x <= scene.points.length; x++) {
-    
-                // posição y
-                let ypos = x + 10;
-                // posição x = x
-                scene.points[x-1].setTo(x, scene.noise.simplex2(x/100, ypos/100)*scene.amplitude);
-                scene.points[x-1].y += 300;
-                scene.graph.fillPointShape(scene.points[x-1]);
-                scene.yoff += 1;
+                scene.points[x].setTo(x, y * scene.amplitude + scene.height / 2);
+                scene.graph.fillPointShape(scene.points[x]);
+                scene.yff += 0.01;
             }
     
             scene.graph.strokePoints(scene.points);
         },
 
-        simpleNoise2d: (incre = 0.1) => {
-            
+        simpleNoise3d: () => {
+
             scene.scl = 20;
             scene.rows = 600 / scene.scl;
             scene.cols = 600 / scene.scl;
             scene.grid = [];
     
-            for(let y = 1; y <= scene.rows; y++){
-    
-                let ypos = y * scene.scl - scene.scl / 2;
+            for(let y = 0; y < scene.rows; y++){
+        
+                let ypos = y * scene.scl;
                 scene.grid[ypos] = [];
     
-                for(let x = 1; x <= scene.cols; x++){
+                for(let x = 0; x < scene.cols; x++){
     
-                    let xpos = x * scene.scl - scene.scl / 2;
+                    let xpos = x * scene.scl;
                     scene.grid[ypos][xpos] = {};
                 }
     
             }
     
+            let xoff = 0;
+            let yoff = 0;
+            scene.zoff = 0;
     
-            scene.graph = scene.add.graphics();
-            scene.graph.setDefaultStyles(scene.defaultStyles);
+            for(let y in scene.grid){
     
-            scene.noise  = window.noise;
-            scene.noise.seed(Math.random());
-            scene.amplitude = 10;
-    
-            scene.off1 = 0;
-            scene.off2 = 1;
-            scene.off3 = 9999;
-    
-            for(let y in scene.grid)
                 for(let x in scene.grid){
     
-                    let xTrans = parseFloat(x);
-                    let yTrans = parseFloat(y);
-                    let xDest = scene.noise.simplex2(scene.off1, scene.off1) * scene.amplitude;
-                    let yDest = scene.noise.simplex2(scene.off2, scene.off2) * scene.amplitude;
-                    // let xDest = scene.noise.simplex3(scene.off1, scene.off1, scene.off3) * scene.amplitude;
-                    // let yDest = scene.noise.simplex3(scene.off2, scene.off2, scene.off3) * scene.amplitude;
+                    let xori = parseFloat(x);
+                    let yori = parseFloat(y);
+                    let angle = scene.noise.simplex3(xoff, yoff, scene.zoff);
     
-                    // quanto maior a incrementação menos usave fica
-                    scene.off1 += incre;
-                    scene.off2 += incre;
-                    scene.off3 += incre;
+                    let xdest = 10 * Math.cos(angle);
+                    let ydest = 10 * Math.sin(angle);
+
+                    let force = new Vector(xori + xdest, yori + ydest);
+                    force.sub({x: xori, y: yori});
     
-                    scene.grid[y][x].line = new Line(scene, xTrans, yTrans, xTrans + xDest, yTrans + yDest);
+                    scene.grid[y][x] = {
     
+                        xori: xori,
+                        yori: yori,
+                        xoff: xoff,
+                        yoff: yoff,
+                        force: force,
+                        line: new Line(scene, xori, yori, xori + xdest, yori + ydest)
+                    };
+                    
+                    
+                    xoff += 0.1;
                 }
     
-            for(let y in scene.grid)
+                yoff += 0.1;
+            }
+        },
+
+        simpleNoise3dUpdate: () => {
+       
+            for(let y in scene.grid){
+
                 for(let x in scene.grid){
+    
+    
+                    let angle = scene.noise.simplex3(scene.grid[y][x].xoff, scene.grid[y][x].yoff, scene.zoff);
+    
+                    let xdest = 10 * Math.cos(angle);
+                    let ydest = 10 * Math.sin(angle);
+
+                    scene.grid[y][x].line.line.setTo(scene.grid[y][x].xori, scene.grid[y][x].yori, scene.grid[y][x].xori + xdest, scene.grid[y][x].yori + ydest);
     
                     scene.graph.strokeLineShape(scene.grid[y][x].line.line)
     
                 }
+            }
+    
+            scene.zoff += 0.01;
         }
     };
 };
