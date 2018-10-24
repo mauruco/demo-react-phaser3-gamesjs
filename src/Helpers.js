@@ -13,19 +13,16 @@ const inspectObj = (obj) => {
     
 }
 
-const random = (max, min) => {
-    
-    return Math.floor(Math.random()*(max-(min)+1)+(min));
-}
+const random = (max, min) => Math.floor(Math.random()*(max-(min)+1)+(min));
 
-const randomArrayEle = (arr) => {
-    
-    return arr[Math.floor(Math.random() * arr.length)];
-}
+const randomArrayEle = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+const mapRange = (x, inMin, inMax, outMin, outMax) => (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 
 export {
 
     inspectObj,
     random,
-    randomArrayEle
+    randomArrayEle,
+    mapRange
 };
