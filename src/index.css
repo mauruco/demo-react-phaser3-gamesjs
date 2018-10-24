@@ -11,10 +11,8 @@ html, body{
 }
 canvas {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -300px;
-  margin-left: -300px;
+  top: 120px;
+  left: 300px;
   width: 600px;
 }
 #menu, #opt , .opt{
