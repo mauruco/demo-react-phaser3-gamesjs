@@ -115,11 +115,11 @@ const SceneLoader = () => {
     menu.appendChild(aSnake);
     // menu.appendChild(aBrick);
     menu.appendChild(aSolar);
-    menu.appendChild(aNatur);
+    // menu.appendChild(aNatur);
     menu.appendChild(aWave);
     menu.appendChild(aNoise);
     body.appendChild(menu);
-    body.appendChild(opt);
+    // body.appendChild(opt);
     body.style.backgroundImage = 'url("assets/background.jpg")';
 }
 

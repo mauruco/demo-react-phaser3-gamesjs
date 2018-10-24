@@ -1,6 +1,7 @@
 import Phaser from '../Phaser';
 import Line from './Line';
-import Vector from '../Vector';
+import Particle from './Particle';
+import { random } from '../Helpers';
 
 const Controller = (scene) => {
 
@@ -10,109 +11,140 @@ const Controller = (scene) => {
 
             scene.points = [];
 
-            for(let i = 0; i < 600; i++){
-    
-                let point = new Phaser.Geom.Point(0,0);
+            let yoff = 0.01;
+
+            scene.amplitude = 200;
+
+            for(let i = 0; i < scene.width; i++){
+
+                let point = {
+                    
+                    yoff: scene.noise.noise2d(0.01, yoff),
+                    point: new Phaser.Geom.Point(0,0)
+                }
+
                 scene.points.push(point);
+                yoff += 0.01;
             }
-            
-    
-            scene.xff = 300;
-            scene.yff = 0;
-            scene.amplitude = 50;
-            scene.height = 600;
         },
 
         simpleNoiseGraphUpdate: () => {
 
+            let first = scene.points.shift();
+
+            first.yoff = scene.points[scene.points.length-1].yoff + 0.01;
+
+            scene.points.push(first);
+
             for(let x = 0; x < scene.points.length; x++) {
 
-                let y =  scene.noise.simplex2(scene.xff, scene.yff);
-    
-                scene.points[x].setTo(x, y * scene.amplitude + scene.height / 2);
-                scene.graph.fillPointShape(scene.points[x]);
-                scene.yff += 0.01;
+                let y =  scene.noise.noise2d(0.01, scene.points[x].yoff);
+
+                scene.points[x].point.setTo(x, y * scene.amplitude + scene.height / 2);
+                scene.graph.fillPointShape(scene.points[x].point);
             }
     
             scene.graph.strokePoints(scene.points);
         },
 
         simpleNoise3d: () => {
-
-            scene.scl = 20;
-            scene.rows = 600 / scene.scl;
-            scene.cols = 600 / scene.scl;
-            scene.grid = [];
     
             for(let y = 0; y < scene.rows; y++){
         
-                let ypos = y * scene.scl;
+                let ypos = y * scene.scl + scene.scl / 2;
                 scene.grid[ypos] = [];
     
                 for(let x = 0; x < scene.cols; x++){
     
-                    let xpos = x * scene.scl;
+                    let xpos = x * scene.scl + scene.scl / 2;
                     scene.grid[ypos][xpos] = {};
                 }
-    
             }
     
-            let xoff = 0;
-            let yoff = 0;
-            scene.zoff = 0;
+            let xoff = random(1, 9) / 10;
+            let yoff = random(1, 9) / 10;
+            let zoff = random(1, 9) / 10;
     
             for(let y in scene.grid){
-    
                 for(let x in scene.grid){
-    
-                    let xori = parseFloat(x);
-                    let yori = parseFloat(y);
-                    let angle = scene.noise.simplex3(xoff, yoff, scene.zoff);
-    
-                    let xdest = 10 * Math.cos(angle);
-                    let ydest = 10 * Math.sin(angle);
 
-                    let force = new Vector(xori + xdest, yori + ydest);
-                    force.sub({x: xori, y: yori});
-    
                     scene.grid[y][x] = {
-    
-                        xori: xori,
-                        yori: yori,
+
                         xoff: xoff,
                         yoff: yoff,
-                        force: force,
-                        line: new Line(scene, xori, yori, xori + xdest, yori + ydest)
+                        zoff: zoff,
+                        line: new Line(scene, parseFloat(x), parseFloat(y), parseFloat(x), parseFloat(y))
                     };
-                    
-                    
                     xoff += 0.1;
                 }
-    
                 yoff += 0.1;
             }
         },
 
-        simpleNoise3dUpdate: () => {
+        simpleNoise3dUpdate: (zoff) => {
        
             for(let y in scene.grid){
-
                 for(let x in scene.grid){
-    
-    
-                    let angle = scene.noise.simplex3(scene.grid[y][x].xoff, scene.grid[y][x].yoff, scene.zoff);
-    
+
+                    let z = zoff;
+                    if(!zoff) z = scene.grid[y][x].zoff;
+
+                    // let angle = scene.noise.noise3d(scene.grid[y][x].xoff, scene.grid[y][x].yoff, z) * Math.PI * Math.PI;
+                    // let angle = scene.noise.noise3d(scene.grid[y][x].xoff, scene.grid[y][x].yoff, z) * Math.PI;
+                    let angle = scene.noise.noise3d(scene.grid[y][x].xoff, scene.grid[y][x].yoff, z) * 2;
                     let xdest = 10 * Math.cos(angle);
                     let ydest = 10 * Math.sin(angle);
 
-                    scene.grid[y][x].line.line.setTo(scene.grid[y][x].xori, scene.grid[y][x].yori, scene.grid[y][x].xori + xdest, scene.grid[y][x].yori + ydest);
-    
-                    scene.graph.strokeLineShape(scene.grid[y][x].line.line)
-    
+                    scene.grid[y][x].zoff += 0.01;
+
+                    scene.grid[y][x].line.update(xdest, ydest);    
                 }
             }
+        },
+
+        makeParticles: () => {
+
+            scene.pcount = 0;
+            scene.particles = [];
+            for(let i = 0; i < 100; i++)
+                scene.particles.push(new Particle(scene, random(0, scene.width), random(0, scene.height)));
+        },
+
+        resetparticles: () => {
+
+            scene.i = 0;
+            let colors = [];
+            colors[0] = scene.redStyles;
+            colors[1] = scene.greenStyles;
+            colors[2] = scene.blueStyles;
+            colors[3] = scene.redStyles;
+            colors[4] = scene.greenStyles;
+            colors[5] = scene.blueStyles;
+            colors[6] = scene.redStyles;
+            colors[7] = scene.greenStyles;
+            colors[8] = scene.blueStyles;
+            colors[9] = scene.redStyles;
+            colors[10] = scene.greenStyles;
+            colors[11] = scene.blueStyles;
     
-            scene.zoff += 0.01;
+            scene.pointGraph.setDefaultStyles(colors[random(0,11)]);
+    
+            for(let i = 0; i < 100; i++)
+                scene.particles[i].reset(random(0, scene.width), random(0, scene.height));
+        },
+
+        updateParticles: () => {
+
+            scene.pcount++;
+        
+            if(scene.pcount >= 480){
+
+                scene.Ctrl.resetparticles();
+                scene.pcount = 0;
+            }
+    
+            for(let i = 0; i < scene.particles.length; i++)
+                scene.particles[i].follow(scene.grid, scene.scl);
         }
     };
 };

@@ -64,8 +64,11 @@ const Controller = (scene) => {
 
             let count = 0;
             for(let y in grid)
-                for(let x in grid[y])
+                for(let x in grid[y]){
+
                     count++;
+                    scene.abc = x; // somento pra tirar warning no console :/
+                }
 
             return count;
         },

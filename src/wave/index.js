@@ -1,5 +1,4 @@
 import Phaser from '../Phaser';
-import Vector from '../Vector';
 import Ball from './Ball';
 
 class Wave extends Phaser.Scene {
@@ -8,9 +7,9 @@ class Wave extends Phaser.Scene {
 
         return {
             type: Phaser.AUTO,
-            width: 2400,
+            width: 600,
             height: 600,
-            backgroundColor: 0xFFFFFF,
+            backgroundColor: 0x000000,
             scene: [Wave]
         };
     };
@@ -20,24 +19,34 @@ class Wave extends Phaser.Scene {
         super({key: 'Wave'});
     }
 
-    init() {
+    text() {
 
+        let opt = document.createElement('div');
+        opt.className = 'opt';
+        let body = document.getElementsByTagName('body')[0];
+        let span = document.createElement('span');
+        span.innerHTML = 'Seno e cosseno trabalhando juntos!'
+        opt.appendChild(span);
+        body.appendChild(opt);
+        
         let canvas = document.getElementsByTagName('canvas')[0];
-        canvas.style.marginLeft = '-1200px';
-    }
-    
-    preload() {
+        canvas = canvas.getBoundingClientRect();
+        opt.style.top = (canvas.y - 35)+'px';
+        opt.style.left = canvas.x+'px';
+        opt.style.right = 'auto';
     }
 
     create() {
 
+        this.text();
+
         this.balls = [];
-        for(let i = 0; i < 120; i++)
-            this.balls.push(new Ball(this, i*30, 300, 10));
+        for(let i = 0; i < 600; i++)
+            this.balls.push(new Ball(this, i, 300, 2));
 
         this.frequency = 0.1;
         this.frequency2 = 0.1;
-        this.amplitude = 100;
+        this.amplitude = 25;
     }
     
     update() {

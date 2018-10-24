@@ -100,9 +100,6 @@ class Natur extends Phaser.Scene {
         this.mouseFowler.applyForce(this.mouse);
         this.mouseFowler.update();
 
-        let bottomVector = new Vector(0, this.world.y);
-
-
         // resistencia de agua
         let gravity = new Vector(0, 0.1);
         
@@ -133,8 +130,6 @@ class Natur extends Phaser.Scene {
         let toSun = new Vector(this.sun.x, this.sun.y);
         toSun.sub(this.planet);
         let mag = toSun.magnetude();
-        let magNorm = toSun.normalize();
-        magNorm = toSun.magnetude();
 
         let atraction = ((this.sun.mass*this.planet.mass)/mag**2) * mag;
         toSun.setMagnetude(atraction);

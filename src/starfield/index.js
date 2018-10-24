@@ -2,7 +2,7 @@ import Phaser from '../Phaser';
 
 class Starfield extends Phaser.Scene {
 
-    stars = 100;
+    stars = 150;
     worldWidth = 0;
     worldHeight = 0;
     speed = 10;
@@ -71,23 +71,22 @@ class Starfield extends Phaser.Scene {
             // eu crio estrelas tanto em coordenadas positivas como negativas
             let star = {
                 color: 0xffffff,
-                size: 1,
+                size: 0.1,
                 x: this.random((this.worldWidth / 2), - (this.worldWidth / 2)),
                 y: this.random((this.worldHeight / 2), - (this.worldHeight / 2)),
                 z: this.random(0, this.worldLength),
                 starObj: null,
-                line: null,
-                graphLine: null
+                line: null
             };
 
-            star.starObj = this.add.circle(star.x, star.y, star.size, star.color);
+            // star.starObj = this.add.circle(star.x, star.y, star.size, star.color);
+            star.starObj = new Phaser.Geom.Circle(star.x, star.y, star.size);
 
             star.startX = 0;
             star.startY = 0;
             star.resetZ = true;
 
             star.line = new Phaser.Geom.Line(0, 0, 0, 0);
-            star.graphLine = this.add.graphics({ lineStyle: {width: 1, color: 0x000000} });
 
             this.state.stars.push(star);
         }
@@ -99,13 +98,11 @@ class Starfield extends Phaser.Scene {
 
             // eu crio um aperspective, tanto x como y pecorrem a mesmo distancia
             let perspective = this.distance / (this.distance - star.z);
-
             
             // aumentando comforme a distancia
-            star.starObj.setScale(perspective*3);
+            star.size += 0.01;
             
-            star.starObj.x = (star.x * perspective);
-            star.starObj.y = (star.y * perspective);
+            star.starObj.setTo(star.x * perspective, star.y * perspective, star.size);
             // eu diminuo a distance da estrela por speed
             star.z += parseInt(this.speed);
 
@@ -113,15 +110,16 @@ class Starfield extends Phaser.Scene {
 
                 star.startX = star.starObj.x;
                 star.startY = star.starObj.y;
+                star.size = 0.1;
                 star.resetZ = false;
             }
 
             // linhas
-            star.graphLine.destroy();
             star.line.setTo(star.starObj.x, star.starObj.y, star.startX, star.startY);
-            star.graphLine = this.add.graphics({ lineStyle: {width: 1, color: 0x4d4d00} });
-            star.graphLine.strokeLineShape(star.line);
+            this.graph.strokeLineShape(star.line);
 
+            // console.log(star.starObj);
+            this.graph.fillCircleShape(star.starObj);
 
             // reset to origin
             if(star.z >= 0){
@@ -130,7 +128,7 @@ class Starfield extends Phaser.Scene {
                 star.starObj.y = star.y;
                 star.z = this.random(this.worldLength, 0);
                 star.resetZ = true;
-                star.starObj.setScale(1);
+                // star.starObj.setScale(1);
             }
 
             return star;
@@ -140,6 +138,7 @@ class Starfield extends Phaser.Scene {
     create() {
         
         this.controllers();
+        this.graph = this.add.graphics({ lineStyle: {width: 1, color: 0x4d4d00}, fillStyle: { color: 0xffffff, alpha: 1}});
         this.events.addListener('speedChange', (speed) => {
 
             this.speed = speed;
@@ -156,7 +155,7 @@ class Starfield extends Phaser.Scene {
     }
 
     update() {
-
+        this.graph.clear();
         this.moveStars();
     }
 }
