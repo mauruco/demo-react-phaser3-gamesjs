@@ -1,150 +1,178 @@
 import Phaser from '../Phaser';
 import Line from './Line';
 import Particle from './Particle';
-import { random } from '../Helpers';
+import { random, mapRange } from '../Helpers';
+import { pixel } from '../tools';
 
 const Controller = (scene) => {
 
     return {
 
-        simpleNoiseGraph: () => {
+        text: () => {
 
-            scene.points = [];
+            let opt = document.createElement('div');
+            opt.className = 'opt';
+            let body = document.getElementsByTagName('body')[0];
+            let span = document.createElement('span');
+            span.innerHTML = 'A suavidade de Perlin Noise!'
+            opt.appendChild(span);
+            body.appendChild(opt);
+            
+            let canvas = document.getElementsByTagName('canvas')[0];
+            canvas = canvas.getBoundingClientRect();
+            opt.style.top = (canvas.y - 35)+'px';
+            opt.style.left = canvas.x+'px';
+            opt.style.right = 'auto';
+        },
+
+        simpleNoiseGraph: (noise, width) => {
+
+            let points = [];
 
             let yoff = 0.01;
 
-            scene.amplitude = 200;
-
-            for(let i = 0; i < scene.width; i++){
+            for(let i = 0; i < width; i++){
 
                 let point = {
                     
-                    yoff: scene.noise.noise2d(0.01, yoff),
+                    yoff: noise.noise2d(0.01, yoff),
                     point: new Phaser.Geom.Point(0,0)
                 }
 
-                scene.points.push(point);
+                points.push(point);
                 yoff += 0.01;
             }
+
+            return points;
         },
 
-        simpleNoiseGraphUpdate: () => {
+        simpleNoiseGraphUpdate: (noise, points, graph, height, amplitude) => {
 
-            let first = scene.points.shift();
+            let first = points.shift();
 
-            first.yoff = scene.points[scene.points.length-1].yoff + 0.01;
+            first.yoff = points[points.length-1].yoff + 0.01;
 
-            scene.points.push(first);
+            points.push(first);
 
-            for(let x = 0; x < scene.points.length; x++) {
+            for(let x = 0; x < points.length; x++) {
 
-                let y =  scene.noise.noise2d(0.01, scene.points[x].yoff);
+                let y =  noise.noise2d(0.01, points[x].yoff);
 
-                scene.points[x].point.setTo(x, y * scene.amplitude + scene.height / 2);
-                scene.graph.fillPointShape(scene.points[x].point);
+                points[x].point.setTo(x, y * amplitude + height / 2);
+                graph.fillStyle(0x000000, 1); 
+                graph.fillPointShape(points[x].point);
             }
     
-            scene.graph.strokePoints(scene.points);
+            graph.strokePoints(points);
         },
 
-        simpleNoise3d: () => {
-    
-            for(let y = 0; y < scene.rows; y++){
+        makeGrid: (scl, width, height) => {
+
+            let grid = [];
+            let rows = width / scl;
+            let cols = height / scl;
+
+            for(let y = 0; y < rows; y++){
         
-                let ypos = y * scene.scl + scene.scl / 2;
-                scene.grid[ypos] = [];
+                let ypos = y * scl + scl / 2;
+                grid[ypos] = [];
     
-                for(let x = 0; x < scene.cols; x++){
+                for(let x = 0; x < cols; x++){
     
-                    let xpos = x * scene.scl + scene.scl / 2;
-                    scene.grid[ypos][xpos] = {};
+                    let xpos = x * scl + scl / 2;
+                    grid[ypos][xpos] = {};
                 }
             }
-    
-            let xoff = random(1, 9) / 10;
-            let yoff = random(1, 9) / 10;
-            let zoff = random(1, 9) / 10;
-    
-            for(let y in scene.grid){
-                for(let x in scene.grid){
 
-                    scene.grid[y][x] = {
+            return grid;
+        },
+
+        simpleNoise3d: (grid, graph) => {
+    
+            let amplitude = 0.1;
+            let xoff = amplitude;
+            let yoff = amplitude;
+            let zoff = amplitude;
+
+            for(let y in grid){
+                for(let x in grid){
+
+                    grid[y][x] = {
 
                         xoff: xoff,
                         yoff: yoff,
                         zoff: zoff,
-                        line: new Line(scene, parseFloat(x), parseFloat(y), parseFloat(x), parseFloat(y))
+                        line: new Line(graph, parseFloat(x), parseFloat(y), parseFloat(x), parseFloat(y))
                     };
-                    xoff += 0.1;
+                    xoff += amplitude;
                 }
-                yoff += 0.1;
+                xoff = amplitude;
+                yoff += amplitude;
             }
         },
 
-        simpleNoise3dUpdate: (zoff) => {
+        simpleNoise3dUpdate: (noise, grid, invert) => {
+
+            let mult = 1;
+            if(invert)
+                mult = -1;
        
-            for(let y in scene.grid){
-                for(let x in scene.grid){
+            for(let y in grid) {
+                for(let x in grid) {
 
-                    let z = zoff;
-                    if(!zoff) z = scene.grid[y][x].zoff;
-
-                    // let angle = scene.noise.noise3d(scene.grid[y][x].xoff, scene.grid[y][x].yoff, z) * Math.PI * Math.PI;
-                    // let angle = scene.noise.noise3d(scene.grid[y][x].xoff, scene.grid[y][x].yoff, z) * Math.PI;
-                    let angle = scene.noise.noise3d(scene.grid[y][x].xoff, scene.grid[y][x].yoff, z) * 2;
+                    // let angle = noise.noise3d(grid[y][x].xoff, grid[y][x].yoff, z) * Math.PI * Math.PI;
+                    // let angle = noise.noise3d(grid[y][x].xoff, grid[y][x].yoff, z) * Math.PI;
+                    let angle = noise.noise3d(grid[y][x].xoff, grid[y][x].yoff, grid[y][x].zoff) * 2;
+                    // let angle = noise.noise3d(grid[y][x].xoff, grid[y][x].yoff, z);
                     let xdest = 10 * Math.cos(angle);
                     let ydest = 10 * Math.sin(angle);
 
-                    scene.grid[y][x].zoff += 0.01;
-
-                    scene.grid[y][x].line.update(xdest, ydest);    
+                    grid[y][x].zoff += 0.001 * mult;
+                    grid[y][x].line.update(xdest, ydest, mult);   
                 }
             }
         },
 
-        makeParticles: () => {
+        makeParticles: (width, height) => {
 
-            scene.pcount = 0;
-            scene.particles = [];
-            for(let i = 0; i < 100; i++)
-                scene.particles.push(new Particle(scene, random(0, scene.width), random(0, scene.height)));
-        },
+            let particles = [];
+            for(let i = 0; i < 100; i++){
 
-        resetparticles: () => {
+                let y =  random(0, height) + i;
+                y = y > 600 ? random(0, height) : y;
 
-            scene.i = 0;
-            let colors = [];
-            colors[0] = scene.redStyles;
-            colors[1] = scene.greenStyles;
-            colors[2] = scene.blueStyles;
-            colors[3] = scene.redStyles;
-            colors[4] = scene.greenStyles;
-            colors[5] = scene.blueStyles;
-            colors[6] = scene.redStyles;
-            colors[7] = scene.greenStyles;
-            colors[8] = scene.blueStyles;
-            colors[9] = scene.redStyles;
-            colors[10] = scene.greenStyles;
-            colors[11] = scene.blueStyles;
-    
-            scene.pointGraph.setDefaultStyles(colors[random(0,11)]);
-    
-            for(let i = 0; i < 100; i++)
-                scene.particles[i].reset(random(0, scene.width), random(0, scene.height));
-        },
-
-        updateParticles: () => {
-
-            scene.pcount++;
-        
-            if(scene.pcount >= 480){
-
-                scene.Ctrl.resetparticles();
-                scene.pcount = 0;
+                particles.push(new Particle(random(0, width), y));
             }
+
+            return particles;
+        },
+
+        updateParticles: (particles, grid, width, height, scl, graph) => {
+
+            for(let i = 0; i < particles.length; i++)
+                particles[i].follow(grid, scl, width, height, graph);
+        },
+
+        perlinNoise(noise, graph, width, height) {
+
+            let amplitude = 0.01;
+            let yoff = amplitude;
+            let xoff = amplitude;
     
-            for(let i = 0; i < scene.particles.length; i++)
-                scene.particles[i].follow(scene.grid, scene.scl);
+            for(let y = 0; y < height; y++){
+                
+                for(let x = 0; x < width; x++){
+    
+                    let noiseValue = noise.noise3d(xoff, yoff, amplitude);
+                    let color = mapRange(noiseValue, -1, 1, 0, 255);
+                    
+                    pixel(graph, x, y, color, color, color);
+                    xoff += amplitude;
+                }
+                
+                xoff = amplitude;
+                yoff += amplitude;
+            }
         }
     };
 };

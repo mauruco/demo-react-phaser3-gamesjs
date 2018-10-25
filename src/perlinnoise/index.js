@@ -15,67 +15,57 @@ class Noise extends Phaser.Scene {
         };
     };
 
-    defaultStyles = {lineStyle: {width: 1, color: 0x999999, alpha: 1}, fillStyle: { color: 0xFFFFFF, alpha: 1}};
-    redStyles = {lineStyle: {width: 1, color: 0xFF0000, alpha: 1}, fillStyle: { color: 0xFF0000, alpha: 0.1}};
-    greenStyles = {lineStyle: {width: 1, color: 0xFF0000, alpha: 1}, fillStyle: { color: 0x00FF00, alpha: 0.1}};
-    blueStyles = {lineStyle: {width: 1, color: 0xFF0000, alpha: 1}, fillStyle: { color: 0x0000FF, alpha: 0.1}};
+    defaultStyles = {lineStyle: {width: 1, color: 0x000000, alpha: 1}, fillStyle: { color: 0x000000, alpha: 1}};
 
     constructor() {
         
         super({key: 'Noise'});
     }
 
-    text() {
-
-        let opt = document.createElement('div');
-        opt.className = 'opt';
-        let body = document.getElementsByTagName('body')[0];
-        let span = document.createElement('span');
-        span.innerHTML = 'A suavidade de Perlin Noise!'
-        opt.appendChild(span);
-        body.appendChild(opt);
-        
-        let canvas = document.getElementsByTagName('canvas')[0];
-        canvas = canvas.getBoundingClientRect();
-        opt.style.top = (canvas.y - 35)+'px';
-        opt.style.left = canvas.x+'px';
-        opt.style.right = 'auto';
-    }
-
-
     create() {
 
-        this.text();
-
+        
         this.width = 600;
         this.height = 600;
         this.scl = 20;
-        this.rows = this.width / this.scl;
-        this.cols = this.height / this.scl;
-        this.grid = [];
         this.noise = new PerlinNoise();
+        this.invert = false;
+        this.count = 0;
+        
+        this.Ctrl = Controller(this);
+        this.Ctrl.text();
+        this.grid = this.Ctrl.makeGrid(this.scl, this.width, this.height);
 
         this.graph = this.add.graphics();
         this.graph.setDefaultStyles(this.defaultStyles);
-        this.pointGraph = this.add.graphics();
-        this.pointGraph.setDefaultStyles(this.redStyles);
 
-        this.Ctrl = Controller(this);
-        this.Ctrl.simpleNoiseGraph();
-        this.Ctrl.simpleNoise3d();
-        this.Ctrl.simpleNoise3dUpdate();
+
+        this.Ctrl.simpleNoise3d(this.grid, this.graph);
+        // this.Ctrl.simpleNoise3dUpdate(this.noise, this.grid, this.invert);
         
-        this.Ctrl.makeParticles();
+        this.particles = this.Ctrl.makeParticles(this.width, this.height);
 
-        this.Ctrl.updateParticles();
+        this.points = this.Ctrl.simpleNoiseGraph(this.noise, this.width);
+
+        // this.graph.clear();
+        // this.Ctrl.perlinNoise(this.noise, this.graph, this.width, this.height);
     }
-    
+
+
     update() {
         
-        this.graph.clear();
-        this.Ctrl.simpleNoiseGraphUpdate();
-        this.Ctrl.simpleNoise3dUpdate();
-        this.Ctrl.updateParticles();
+        // this.graph.clear();
+        // invert force
+        if(this.count % 480 === 0) {
+            
+            this.invert = this.invert ? false : true;
+            this.count = 0;
+        }
+        this.count++;
+
+        this.Ctrl.simpleNoise3dUpdate(this.noise, this.grid, this.invert);
+        this.Ctrl.updateParticles(this.particles, this.grid, this.width, this.height, this.scl, this.graph);
+        // this.Ctrl.simpleNoiseGraphUpdate(this.noise, this.points, this.graph, this.height, 200);
     }
 }
 

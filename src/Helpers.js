@@ -1,4 +1,4 @@
-const inspectObj = (obj) => {
+const inspect = (obj) => {
 
     console.log(`%c${obj.constructor.name}`, 'color: #00FFFF');
     for(let m in obj)
@@ -21,7 +21,7 @@ const mapRange = (x, inMin, inMax, outMin, outMax) => (x - inMin) * (outMax - ou
 
 export {
 
-    inspectObj,
+    inspect,
     random,
     randomArrayEle,
     mapRange

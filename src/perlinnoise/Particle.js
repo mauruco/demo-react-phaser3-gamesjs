@@ -1,12 +1,12 @@
 import Phaser from '../Phaser';
 import Vector from '../Vector';
+import { random } from '../Helpers';
 
 class Particle extends Vector {
 
-    constructor(scene, x, y) {
+    constructor(x, y) {
 
         super(x, y);
-        this.scene = scene;
         this.velocity = new Vector(0,0);
         this.acceleration = new Vector(0,0);
         this.particle = new Phaser.Geom.Point(x, y);
@@ -21,47 +21,69 @@ class Particle extends Vector {
         this.particle.setTo(x,y);
     }
 
-    follow(grid, scl) {
+    follow(grid, scl, width, height, graph) {
 
-        let x = Math.floor(this.x / scl)*scl - scl/2;
-        let y = Math.floor(this.y / scl)*scl - scl/2;
+        let forceX = (scl/2);
+        let forceY = (scl/2);
+
+        forceX = Math.floor(this.x / scl ) * scl + (scl/2);
+        forceY = Math.floor(this.y / scl ) * scl + (scl/2);
+
+        if(forceX === width + (scl/2))
+            forceX = width - (scl/2)
+        if(forceY === height + (scl/2))
+            forceY = height - (scl/2)
         
-        if(x === - (this.scene.scl/2))
-            x = this.scene.width - (this.scene.scl/2);
-        if(y === - (this.scene.scl/2))
-            y = this.scene.height - (this.scene.scl/2);
-        if(x === this.scene.width + (this.scene.scl/2))
-            x = (this.scene.scl/2);
-        if(y === this.scene.height + (this.scene.scl/2))
-            y = (this.scene.scl/2);
-        
-        this.acceleration.add(grid[x][y].line.force);
-        this.update();
+        this.acceleration.add(grid[forceY][forceX].line.force);
+
+        this.update(width, height, graph);
     }
-
-    update() {
-
+    
+    update(width, height, graph) {
+        
         this.acceleration.normalize();
-        this.acceleration.mult(0.01);
-
-        // console.log(this.acceleration);
-
+        this.acceleration.mult(5);
+        
         this.velocity.add(this.acceleration);
-        this.velocity.limit(1);
 
-        if(this.x > this.scene.width - (this.scene.scl/2))
-            this.x = (this.scene.scl/2);
-        if(this.x < (this.scene.scl/2))
-            this.x = this.scene.width - (this.scene.scl/2);
-        if(this.y > this.scene.height - (this.scene.scl/2))
-            this.y = (this.scene.scl/2);
-        if(this.y < (this.scene.scl/2))
-            this.y = this.scene.height - (this.scene.scl/2);
+        this.velocity.limit(3);
 
         this.add(this.velocity);
         this.acceleration.mult(0);
+        
         this.particle.setTo(this.x, this.y);
-        this.scene.pointGraph.fillPointShape(this.particle, 5);
+        graph.fillStyle(0xDDDDDD, 0.05); 
+        graph.fillPointShape(this.particle, 5);
+
+        // if(this.x <= 0){
+
+        //     this.x = width;
+        //     this.y = random(0, height);
+        // }
+
+        // if(this.x >= width){
+
+        //     this.x = 0;
+        //     this.y = random(0, height);
+        // }
+
+        // if(this.y >= height){
+
+        //     this.y = 0;
+        //     this.x = random(0, width);
+        // }
+
+        // if(this.y <= 0){
+
+        //     this.y = height;
+        //     this.x = random(0, width);
+        // }
+
+        if(this.x <= 0 || this.x >= width)
+            this.x = random(1, width);
+
+        if(this.y <= 0 || this.y >= height)
+            this.y = random(1, height);
     }
 }
 
