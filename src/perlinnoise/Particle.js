@@ -1,6 +1,6 @@
 import Phaser from '../Phaser';
 import Vector from '../Vector';
-import { random } from '../Helpers';
+import { random } from '../helpers';
 
 class Particle extends Vector {
 
@@ -52,7 +52,7 @@ class Particle extends Vector {
         this.acceleration.mult(0);
         
         this.particle.setTo(this.x, this.y);
-        graph.fillStyle(0xDDDDDD, 0.05); 
+        graph.fillStyle(0xFFFFFF, 0.01); 
         graph.fillPointShape(this.particle, 5);
 
         // if(this.x <= 0){

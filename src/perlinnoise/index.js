@@ -24,9 +24,8 @@ class Noise extends Phaser.Scene {
 
     create() {
 
-        
-        this.width = 600;
-        this.height = 600;
+        this.width = this.game.config.width;
+        this.height = this.game.config.height;
         this.scl = 20;
         this.noise = new PerlinNoise();
         this.invert = false;
@@ -60,6 +59,7 @@ class Noise extends Phaser.Scene {
             
             this.invert = this.invert ? false : true;
             this.count = 0;
+            // console.log('invert')
         }
         this.count++;
 

@@ -1,3 +1,5 @@
+// converter um array[x][y] para um array de uma dimensão = array[(x + y * width) * 4];
+
 const inspect = (obj) => {
 
     console.log(`%c${obj.constructor.name}`, 'color: #00FFFF');
@@ -19,10 +21,13 @@ const randomArrayEle = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const mapRange = (x, inMin, inMax, outMin, outMax) => (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 
+const rgbToHex = (r, g, b) => ((r << 16) | (g << 8) | b).toString(16);
+
 export {
 
     inspect,
     random,
     randomArrayEle,
-    mapRange
+    mapRange,
+    rgbToHex
 };

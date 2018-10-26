@@ -9,6 +9,8 @@ import Debuger from './Debuger';
 import Natur from './natur';
 import Wave from './wave';
 import Noise from './perlinnoise';
+import Supershape from './supershape';
+import Colorpicker from './colorpicker';
 
 const SceneLoader = () => {
 
@@ -62,6 +64,16 @@ const SceneLoader = () => {
     aNoise.href = '#noise';
     aNoise.innerHTML = 'PERLIN NOISE';
     aNoise.addEventListener('click', (e) => goTo(e, '#noise'));
+
+    let aSuper = document.createElement('a');
+    aSuper.href = '#supershape';
+    aSuper.innerHTML = 'SUPERSHAPE';
+    aSuper.addEventListener('click', (e) => goTo(e, '#supershape'));
+
+    let aColor = document.createElement('a');
+    aColor.href = '#colorpicker';
+    aColor.innerHTML = 'COLOR PICKER';
+    aColor.addEventListener('click', (e) => goTo(e, '#colorpicker'));
     
     let menu = document.createElement('menu');
     let opt = document.createElement('opt');
@@ -105,6 +117,12 @@ const SceneLoader = () => {
     
     if(hash === '#noise')
         new Phaser.Game(Noise.config());
+    
+    if(hash === '#supershape')
+        new Phaser.Game(Supershape.config());
+
+    if(hash === '#colorpicker')
+        new Phaser.Game(Colorpicker.config());
 
     opt.id = 'opt';
     opt.innerHTML = 'OPTIONS<br />';
@@ -118,6 +136,8 @@ const SceneLoader = () => {
     // menu.appendChild(aNatur);
     menu.appendChild(aWave);
     menu.appendChild(aNoise);
+    menu.appendChild(aSuper);
+    menu.appendChild(aColor);
     body.appendChild(menu);
     // body.appendChild(opt);
     body.style.backgroundImage = 'url("assets/background.jpg")';

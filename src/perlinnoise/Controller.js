@@ -1,7 +1,7 @@
 import Phaser from '../Phaser';
 import Line from './Line';
 import Particle from './Particle';
-import { random, mapRange } from '../Helpers';
+import { random, mapRange } from '../helpers';
 import { pixel } from '../tools';
 
 const Controller = (scene) => {
