@@ -33,30 +33,9 @@ class Starfield extends Phaser.Scene {
 
     controllers() {
 
-        let opt = document.createElement('div');
-        let body = document.getElementsByTagName('body')[0];
-        opt.className = 'opt';
-        let inline = document.createElement('span');
-        inline.className = 'inline';
-        inline.innerHTML = 'SPEED:';
-        let speedInp = document.createElement('input');
-        speedInp.type = 'number';
-        speedInp.value = 10;
-        speedInp.id = 'starspeed';
-        let button = document.createElement('button');
-        button.className = 'dark';
-        button.innerHTML = 'APPLY';
-        this.events = new Phaser.Events.EventEmitter();
-        button.onclick = () =>this.events.emit('speedChange', speedInp.value);
-        opt.appendChild(inline);
-        opt.appendChild(speedInp);
-        opt.appendChild(button);
-        body.appendChild(opt);
-        let canvas = document.getElementsByTagName('canvas')[0];
-        canvas = canvas.getBoundingClientRect();
-        opt.style.top = (canvas.y - 40)+'px';
-        opt.style.left = canvas.x+'px';
-        opt.style.right = 'auto';
+        window.sceneemit = () => {this.events.emit('speedChange')};
+        let opt = document.getElementById('opt');
+        opt.innerHTML = '<span class="inline">Speed: </span><input type="number" value="10" /><button class="dark" onclick="window.sceneemit()">APPLY</button>';
     }
 
     random(max, min) {
@@ -136,12 +115,15 @@ class Starfield extends Phaser.Scene {
     }
     
     create() {
-        
+
         this.controllers();
+        
         this.graph = this.add.graphics({ lineStyle: {width: 1, color: 0x4d4d00}, fillStyle: { color: 0xffffff, alpha: 1}});
+        this.events.removeAllListeners(['speedChange']);
         this.events.addListener('speedChange', (speed) => {
 
-            this.speed = speed;
+            let inp = document.querySelector('#opt input');
+            this.speed = inp.value;
         });
         this.worldWidth = this.game.config.width;
         this.worldHeight = this.game.config.height;

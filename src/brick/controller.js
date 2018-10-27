@@ -1,4 +1,4 @@
-const Controller = (scene) => {
+const controller = (scene) => {
 
     // init
     setTimeout(() => {
@@ -58,4 +58,4 @@ const Controller = (scene) => {
     };
 };
 
-export default Controller;
+export default controller;

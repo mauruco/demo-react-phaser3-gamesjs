@@ -1,4 +1,4 @@
-const Controller = (scene) => {
+const controller = (scene) => {
 
     // init
     setTimeout(() => {
@@ -9,28 +9,11 @@ const Controller = (scene) => {
 
     return {
 
-        createPoints: () => {
+        controllers: () => {
 
-            let opt = document.createElement('div');
-            opt.className = 'opt';
-            let body = document.getElementsByTagName('body')[0];
-            let span = document.createElement('span');
-            span.innerHTML = 'POINTS: '
-            let points = document.createElement('input');
-            points.type = 'number';
-            points.disabled = true;
-            points.className = 'points';
-            points.value = 0;
-            opt.appendChild(span);
-            opt.appendChild(points);
-            body.appendChild(opt);
-            
-            let canvas = document.getElementsByTagName('canvas')[0];
-            canvas = canvas.getBoundingClientRect();
-            opt.style.top = (canvas.y - 35)+'px';
-            opt.style.left = canvas.x+'px';
-            opt.style.right = 'auto';
-            return points;
+            let opt = document.getElementById('opt');
+            opt.innerHTML = '<span class="inline">POINTS: </span><input type="number" class="points" value="0" disabled="disabled" />';
+            return document.querySelector('#opt input');
         },
 
         randomArrayEle: (arr) => {
@@ -154,7 +137,7 @@ const Controller = (scene) => {
         randomPositionFruit: (snake, fruit, grid, nextPosition, tailPosition) => {
 
             let possiblePos = [];
-            scene.Ctrl.walkGrid(grid, (psy, psx) => {
+            scene.ctrl.walkGrid(grid, (psy, psx) => {
 
                 for(let i = 0; i < snake.body.length; i++)
                     if(parseInt(snake.body.x) !== psx && parseInt(snake.body.y) !== psy)
@@ -163,7 +146,7 @@ const Controller = (scene) => {
                                 possiblePos.push([psy,psx]);
             });
                     
-            let random = scene.Ctrl.randomArrayEle(possiblePos);
+            let random = scene.ctrl.randomArrayEle(possiblePos);
             fruit.y = random[0];
             fruit.x = random[1];
             return fruit;
@@ -176,7 +159,7 @@ const Controller = (scene) => {
             if(randNumber !== 13)
                 return grape;
 
-            return scene.Ctrl.randomPositionFruit(snake, grape, psy, psx);
+            return scene.ctrl.randomPositionFruit(snake, grape, psy, psx);
         },
 
         changeAlpha: (fruit) => {
@@ -262,4 +245,4 @@ const Controller = (scene) => {
     }
 };
 
-export default Controller;
+export default controller;

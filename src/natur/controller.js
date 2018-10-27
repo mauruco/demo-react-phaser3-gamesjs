@@ -1,10 +1,10 @@
 import Phaser from '../Phaser';
 
-const Controller = (scene) => {
+const controller = (scene) => {
 
     return {
 
     };
 };
 
-export default Controller;
+export default controller;

@@ -1,5 +1,5 @@
 import Phaser from '../Phaser';
-import Controller from './Controller';
+import controller from './controller';
 import PerlinNoise from './PerlinNoise';
 
 class Noise extends Phaser.Scene {
@@ -31,23 +31,23 @@ class Noise extends Phaser.Scene {
         this.invert = false;
         this.count = 0;
         
-        this.Ctrl = Controller(this);
-        this.Ctrl.text();
-        this.grid = this.Ctrl.makeGrid(this.scl, this.width, this.height);
+        this.ctrl = controller(this);
+        this.ctrl.text();
+        this.grid = this.ctrl.makeGrid(this.scl, this.width, this.height);
 
         this.graph = this.add.graphics();
         this.graph.setDefaultStyles(this.defaultStyles);
 
 
-        this.Ctrl.simpleNoise3d(this.grid, this.graph);
-        // this.Ctrl.simpleNoise3dUpdate(this.noise, this.grid, this.invert);
+        this.ctrl.simpleNoise3d(this.grid, this.graph);
+        // this.ctrl.simpleNoise3dUpdate(this.noise, this.grid, this.invert);
         
-        this.particles = this.Ctrl.makeParticles(this.width, this.height);
+        this.particles = this.ctrl.makeParticles(this.width, this.height);
 
-        this.points = this.Ctrl.simpleNoiseGraph(this.noise, this.width);
+        this.points = this.ctrl.simpleNoiseGraph(this.noise, this.width);
 
         // this.graph.clear();
-        // this.Ctrl.perlinNoise(this.noise, this.graph, this.width, this.height);
+        // this.ctrl.perlinNoise(this.noise, this.graph, this.width, this.height);
     }
 
 
@@ -63,9 +63,9 @@ class Noise extends Phaser.Scene {
         }
         this.count++;
 
-        this.Ctrl.simpleNoise3dUpdate(this.noise, this.grid, this.invert);
-        this.Ctrl.updateParticles(this.particles, this.grid, this.width, this.height, this.scl, this.graph);
-        // this.Ctrl.simpleNoiseGraphUpdate(this.noise, this.points, this.graph, this.height, 200);
+        this.ctrl.simpleNoise3dUpdate(this.noise, this.grid, this.invert);
+        this.ctrl.updateParticles(this.particles, this.grid, this.width, this.height, this.scl, this.graph);
+        // this.ctrl.simpleNoiseGraphUpdate(this.noise, this.points, this.graph, this.height, 200);
     }
 }
 

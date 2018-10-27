@@ -1,5 +1,4 @@
 import Phaser from './Phaser';
-import Config from './Config';
 import Starfield from './starfield';
 import Minesweeper from './minesweeper';
 import Snake from './snake';
@@ -11,74 +10,25 @@ import Wave from './wave';
 import Noise from './perlinnoise';
 import Supershape from './supershape';
 import Colorpicker from './colorpicker';
+import Display from './display';
+import Pathfinderfluid from './pathfinderfluid';
 
 const SceneLoader = () => {
 
     let hash = window.location.hash;
+    let as = document.getElementsByTagName('a');
 
-    let goTo = (e, game) => {
+    let menu = document.getElementById('menu');
+    menu.style.display = 'block';
 
-        console.log('click')
-        e.preventDefault();
-        window.location.href = `${Config().url}${game}`;
-        window.location.reload();
-    };
+    for(let a in as) {
 
-    let aStar = document.createElement('a');
-    aStar.href = '#starfield';
-    aStar.innerHTML = 'STARFIELD';
-    aStar.addEventListener('click', (e) => goTo(e, '#starfield'));
-    
-    let aMine = document.createElement('a');
-    aMine.href = '#minesweeper';
-    aMine.innerHTML = 'MINESWEEPER';
-    aMine.addEventListener('click', (e) => goTo(e, '#minesweeper'));
-    
-    
-    let aSnake = document.createElement('a');
-    aSnake.href = '#snake';
-    aSnake.innerHTML = 'SNAKE';
-    aSnake.addEventListener('click', (e) => goTo(e, '#snake'));
-    
-    let aBrick = document.createElement('a');
-    aBrick.href = '#brick';
-    aBrick.innerHTML = 'BRICK';
-    aBrick.addEventListener('click', (e) => goTo(e, '#brick'));
-    
-    let aSolar = document.createElement('a');
-    aSolar.href = '#solar';
-    aSolar.innerHTML = 'SOLAR SYSTEM';
-    aSolar.addEventListener('click', (e) => goTo(e, '#solar'));
-    
-    let aNatur = document.createElement('a');
-    aNatur.href = '#naturforce';
-    aNatur.innerHTML = 'NATUR FORCE';
-    aNatur.addEventListener('click', (e) => goTo(e, '#naturforce'));
-    
-    let aWave = document.createElement('a');
-    aWave.href = '#wave';
-    aWave.innerHTML = 'WAVE';
-    aWave.addEventListener('click', (e) => goTo(e, '#wave'));
+        if(as[a].href !== window.location.href)
+            continue;
 
-    let aNoise = document.createElement('a');
-    aNoise.href = '#noise';
-    aNoise.innerHTML = 'PERLIN NOISE';
-    aNoise.addEventListener('click', (e) => goTo(e, '#noise'));
+        as[a].className = 'selected';
+    }
 
-    let aSuper = document.createElement('a');
-    aSuper.href = '#supershape';
-    aSuper.innerHTML = 'SUPERSHAPE';
-    aSuper.addEventListener('click', (e) => goTo(e, '#supershape'));
-
-    let aColor = document.createElement('a');
-    aColor.href = '#colorpicker';
-    aColor.innerHTML = 'COLOR PICKER';
-    aColor.addEventListener('click', (e) => goTo(e, '#colorpicker'));
-    
-    let menu = document.createElement('menu');
-    let opt = document.createElement('opt');
-    let body = document.getElementsByTagName('body')[0];
-    
     if(hash === '#debuger')
         new Phaser.Game(Debuger.config());
     
@@ -88,26 +38,14 @@ const SceneLoader = () => {
     if(hash === '#minesweeper')
         new Phaser.Game(Minesweeper.config());
     
-    if(hash === '#snake'){
-        
-        new Phaser.Game(Snake.config()); 
-        aSnake.className = 'selected';
-        opt.style.display = 'none';
-    }
+    if(hash === '#snake')
+        new Phaser.Game(Snake.config());
     
-    if(hash === '#brick'){
-        
+    if(hash === '#brick')
         new Phaser.Game(Brick.config()); 
-        aBrick.className = 'selected';
-        opt.style.display = 'none';
-    }
     
-    if(hash === '#solar'){
-        
+    if(hash === '#solar')
         new Phaser.Game(Solar.config()); 
-        aSolar.className = 'selected';
-        opt.style.display = 'none';
-    }
     
     if(hash === '#naturforce')
         new Phaser.Game(Natur.config());
@@ -124,23 +62,11 @@ const SceneLoader = () => {
     if(hash === '#colorpicker')
         new Phaser.Game(Colorpicker.config());
 
-    opt.id = 'opt';
-    opt.innerHTML = 'OPTIONS<br />';
-    menu.id = 'menu';
-    menu.innerHTML = 'SELECT THE GAME<br />';
-    menu.appendChild(aStar);
-    menu.appendChild(aMine);
-    menu.appendChild(aSnake);
-    // menu.appendChild(aBrick);
-    menu.appendChild(aSolar);
-    // menu.appendChild(aNatur);
-    menu.appendChild(aWave);
-    menu.appendChild(aNoise);
-    menu.appendChild(aSuper);
-    menu.appendChild(aColor);
-    body.appendChild(menu);
-    // body.appendChild(opt);
-    body.style.backgroundImage = 'url("assets/background.jpg")';
+    if(hash === '#display')
+        new Phaser.Game(Display.config());
+
+    if(hash === '#pathfinderfluid')
+        new Phaser.Game(Pathfinderfluid.config());
 }
 
 export default SceneLoader;

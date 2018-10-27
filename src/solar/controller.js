@@ -1,24 +1,13 @@
 import Phaser from '../Phaser'
 
-const Controller = (scene) => {
+const controller = (scene) => {
 
     return {
 
         text: () => {
 
-            let opt = document.createElement('div');
-            opt.className = 'opt';
-            let body = document.getElementsByTagName('body')[0];
-            let span = document.createElement('span');
-            span.innerHTML = 'Curte trigonometria?'
-            opt.appendChild(span);
-            body.appendChild(opt);
-            
-            let canvas = document.getElementsByTagName('canvas')[0];
-            canvas = canvas.getBoundingClientRect();
-            opt.style.top = (canvas.y - 35)+'px';
-            opt.style.left = canvas.x+'px';
-            opt.style.right = 'auto';
+            let opt = document.getElementById('opt');
+            opt.innerHTML = '<span class="inline">Curte trigonometria?</span>';
         },
 
         newPlanet: (orbitRadius) => {
@@ -134,4 +123,4 @@ const Controller = (scene) => {
     };
 };
 
-export default Controller;
+export default controller;

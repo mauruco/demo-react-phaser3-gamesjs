@@ -9,52 +9,59 @@ html, body{
   background-repeat: no-repeat;
   background-color: #99B628;
 }
+body {
+  background-image: url("/assets/Phaser-Logo-Small.png");
+  background-position-x: 650px;
+  background-position-y: 150px;
+}
 canvas {
   position: absolute;
-  top: 120px;
-  left: 300px;
+  top: 78px;
+  left: 10px;
   width: 600px;
 }
 #menu, #opt , .opt{
   position: absolute;
-  top: 10px;
+  top: 0;
   left: 10px;
   margin: 0;
   padding: 0;
 }
-#opt, .opt {
-  right: 10px;
-  left: auto;
+#opt {
+  position: absolute;
+  top: 680px;
+  left: 10px;
   text-align: right;
 }
-#menu a, #opt a, #opt button, .opt a, .opt button{
+#menu a, #opt a, #opt button{
   display: inline-block;
   text-decoration: none;
   padding: 5px 10px;
   color: #666666;
-  margin-top: 10px;
-  margin-right: 10px;
+  margin-top: 5px;
+  margin-right: 2px;
   border: 1px solid #666666;
   background-color: #FFFFFF;
-  border-radius: 4px;
+  border-radius: 2px;
 }
-#menu a:hover, #menu a.selected, #opt a:hover, #opt a.selected, #opt button:hover, #opt button.selected, .opt a:hover, .opt a.selected, .opt button:hover, .opt button.selected{
-  background-color: #EFEFEF;
+#menu a:hover, #menu a.selected, #opt a:hover, #opt a.selected, #opt button:hover, #opt button.selected{
+  background-color: #666666;
+  color: #FDFDFD;
 }
-#menu a.dark, #opt a.dark, #opt button.dark, .opt a.dark, .opt button.dark{
+#menu a.dark, #opt a.dark, #opt button.dark{
   background-color: #333333;
   color: #EEEEEE;
 }
-#menu a.dark:hover, #opt a.dark:hover, #opt button.dark:hover, .opt a.dark:hover, .opt button.dark:hover{
+#menu a.dark:hover, #opt a.dark:hover, #opt button.dark:hover{
   background-color: #000000;
 }
-#opt input[type=number], .opt input[type=number]{
+#opt input[type=number]{
   padding: 5px 10px;
   max-width: 50px;
-  border-radius: 4px;
+  border-radius: 2px;
   border: 1px solid #666666;
 }
-#opt a, #opt button, .opt a, .opt button {
+#opt a, #opt button{
   margin-right: 0;
 }
 .canvas-border {
@@ -65,15 +72,4 @@ input.points {
   color: #333333;
   border: 1px solid transparent !important;
   font-size: 1em;
-}
-#speed{
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 5px 10px;
-}
-#boombsnumber{
-  position: absolute;
-  top: 50px;
-  right: 20px;
 }

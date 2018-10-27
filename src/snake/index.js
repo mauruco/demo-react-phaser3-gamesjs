@@ -1,5 +1,5 @@
 import Phaser from '../Phaser';
-import Controller from './Controller';
+import controller from './controller';
 
 class Snake extends Phaser.Scene {
 
@@ -48,12 +48,12 @@ class Snake extends Phaser.Scene {
 
     create() {
         
-        this.Ctrl = Controller(this);
-        this.points = this.Ctrl.createPoints();
+        this.ctrl = controller(this);
+        this.points = this.ctrl.controllers();
         this.cursors = this.input.keyboard.createCursorKeys();
         this.worldWH = this.game.config.width;
-        this.grid = this.Ctrl.makeGrid(this.worldWH, this.cell);
-        this.gridCount = this.Ctrl.countGrid(this.grid);
+        this.grid = this.ctrl.makeGrid(this.worldWH, this.cell);
+        this.gridCount = this.ctrl.countGrid(this.grid);
         this.apple = this.add.sprite(-this.worldWH, -this.worldWH, 'apple');
         this.grape = this.add.sprite(-this.worldWH, -this.worldWH, 'grape');
         this.grape.livespan = 0;
@@ -66,16 +66,16 @@ class Snake extends Phaser.Scene {
             nextDirection: 'right'
         };
         
-        this.snake = this.Ctrl.snakeAddBody(this.snake, {x: this.cell/2, y: this.cell/2});
-        this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.grid, {x:0, y:0}, {x:0, y:0});
+        this.snake = this.ctrl.snakeAddBody(this.snake, {x: this.cell/2, y: this.cell/2});
+        this.apple = this.ctrl.randomPositionFruit(this.snake, this.apple, this.grid, {x:0, y:0}, {x:0, y:0});
 
         this.input.keyboard.on('keydown', (e) => {
 
-            this.snake = this.Ctrl.directionHandler(e, this.snake);
+            this.snake = this.ctrl.directionHandler(e, this.snake);
         });
 
         // ready
-        this.ready = this.Ctrl.getReady(this.worldWH, (ready) => this.ready = ready);
+        this.ready = this.ctrl.getReady(this.worldWH, (ready) => this.ready = ready);
     }
 
     update() {
@@ -95,21 +95,21 @@ class Snake extends Phaser.Scene {
             this.snake.nextDirection = false;
         }
 
-        let nextPosition = this.Ctrl.getNexPosition(this.snake, this.cell);
-        let tailPosition = this.Ctrl.getTailPosition(this.snake);
+        let nextPosition = this.ctrl.getNexPosition(this.snake, this.cell);
+        let tailPosition = this.ctrl.getTailPosition(this.snake);
 
-        this.gameOver = this.Ctrl.checkCollisionWithSnakeBody(this.snake, nextPosition) || this.Ctrl.checkCollisionWorld(nextPosition, this.worldWH);
+        this.gameOver = this.ctrl.checkCollisionWithSnakeBody(this.snake, nextPosition) || this.ctrl.checkCollisionWorld(nextPosition, this.worldWH);
 
         if(this.gameOver)
-            return this.Ctrl.gameOver(this.worldWH);
+            return this.ctrl.gameOver(this.worldWH);
 
 
-        if(this.Ctrl.checkCollisionWithFruit(nextPosition, this.apple)){
+        if(this.ctrl.checkCollisionWithFruit(nextPosition, this.apple)){
             
             if(this.grape.livespan <= 0)
                 this.grape.show++;
             
-            this.apple = this.Ctrl.randomPositionFruit(this.snake, this.apple, this.grid, nextPosition, tailPosition);
+            this.apple = this.ctrl.randomPositionFruit(this.snake, this.apple, this.grid, nextPosition, tailPosition);
             this.addBody++;
 
             this.speed += 0.04;
@@ -128,15 +128,15 @@ class Snake extends Phaser.Scene {
 
         if(this.grape.show > 5){
 
-            this.grape = this.Ctrl.randomPositionFruit(this.snake, this.grape, this.grid, nextPosition, tailPosition);
+            this.grape = this.ctrl.randomPositionFruit(this.snake, this.grape, this.grid, nextPosition, tailPosition);
             this.grape.livespan = 30;
             this.grape.show = 0;
         }
 
         if(this.grape.x)
-            this.grape = this.Ctrl.changeAlpha(this.grape);
+            this.grape = this.ctrl.changeAlpha(this.grape);
 
-        if(this.Ctrl.checkCollisionWithFruit(nextPosition, this.grape)){
+        if(this.ctrl.checkCollisionWithFruit(nextPosition, this.grape)){
         
             this.grape.livespan = 0;
             this.grape.show = 0;
@@ -147,17 +147,17 @@ class Snake extends Phaser.Scene {
         if(this.addBody){
 
             this.points.value++;
-            this.snake = this.Ctrl.snakeAddBody(this.snake, tailPosition);
+            this.snake = this.ctrl.snakeAddBody(this.snake, tailPosition);
             this.addBody--;
         }
         
-        if(this.Ctrl.checkSuccess(this.snake, this.gridCount)) {
+        if(this.ctrl.checkSuccess(this.snake, this.gridCount)) {
             
             this.gameOver = true;
-            return this.Ctrl.success(this.worldWH, this.worldWH);
+            return this.ctrl.success(this.worldWH, this.worldWH);
         }
 
-        this.snake = this.Ctrl.moveSnake(this.snake, nextPosition);
+        this.snake = this.ctrl.moveSnake(this.snake, nextPosition);
     }
 }
 

@@ -26,20 +26,10 @@ class Colorpicker extends Phaser.Scene {
         this.load.image('colors', 'assets/colorpicker/colormap.gif');
     }
 
-    text(canvas) {
+    text() {
 
-        let opt = document.createElement('div');
-        opt.className = 'opt';
-        let body = document.getElementsByTagName('body')[0];
-        let span = document.createElement('span');
-        span.innerHTML = 'Color Picker.'
-        opt.appendChild(span);
-        body.appendChild(opt);
-        
-        let rect = canvas.getBoundingClientRect();
-        opt.style.top = (rect.y - 35)+'px';
-        opt.style.left = rect.x+'px';
-        opt.style.right = 'auto';
+        let opt = document.getElementById('opt');
+        opt.innerHTML = '<span class="inline">Color Picker!</span>';
     }
 
     create() {
@@ -50,7 +40,7 @@ class Colorpicker extends Phaser.Scene {
         this.graph = this.add.graphics();
         this.graph.setDefaultStyles(this.defaultStyles);
         this.canvas = document.getElementsByTagName('canvas')[0];
-        this.text(this.canvas);
+        this.text();
         this.i = 0;
         
         this.back = this.add.image(this.width/2, this.height/2, 'colors');
@@ -74,13 +64,12 @@ class Colorpicker extends Phaser.Scene {
             // tem que ter utilizado a webgl api pra adiconar um elemento.
             // elementos adiconados coma api de canvas não funcionam
             // não tenho certeza
-            let pixels = new Uint8Array(this.webglContext.drawingBufferWidth * this.webglContext.drawingBufferHeight * 4);
-            this.webglContext.readPixels(x, y, this.webglContext.drawingBufferWidth, this.webglContext.drawingBufferHeight, this.webglContext.RGBA, this.webglContext.UNSIGNED_BYTE, pixels);
-            let pixelR = pixels[4 * (y * this.webglContext.drawingBufferWidth + x)];
-            let pixelG = pixels[4 * (y * this.webglContext.drawingBufferWidth + x) + 1];
-            let pixelB = pixels[4 * (y * this.webglContext.drawingBufferWidth + x) + 2];
-            let pixelA = pixels[4 * (y * this.webglContext.drawingBufferWidth + x) + 3];
-
+            // let pixels = new Uint8Array(this.webglContext.drawingBufferWidth * this.webglContext.drawingBufferHeight * 4);
+            // this.webglContext.readPixels(x, y, this.webglContext.drawingBufferWidth, this.webglContext.drawingBufferHeight, this.webglContext.RGBA, this.webglContext.UNSIGNED_BYTE, pixels);
+            // let pixelR = pixels[4 * (y * this.webglContext.drawingBufferWidth + x)];
+            // let pixelG = pixels[4 * (y * this.webglContext.drawingBufferWidth + x) + 1];
+            // let pixelB = pixels[4 * (y * this.webglContext.drawingBufferWidth + x) + 2];
+            // let pixelA = pixels[4 * (y * this.webglContext.drawingBufferWidth + x) + 3];
         }
         
         let color = rgbToHex(pixel[0], pixel[1], pixel[2]);

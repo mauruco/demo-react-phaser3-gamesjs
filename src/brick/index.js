@@ -1,5 +1,5 @@
 import Phaser from '../Phaser';
-import Controller from './Controller';
+import controller from './controller';
 
 class Brick extends Phaser.Scene {
 
@@ -45,10 +45,10 @@ class Brick extends Phaser.Scene {
 
     create() {
 
-        this.Ctrl = Controller(this);
-        this.grid = this.Ctrl.makeGrid(this.worldWH, this.cell);
-        this.bricks = this.Ctrl.addBricks(this.worldWH, 100, this.brickSize, 10);
-        this.ball = this.Ctrl.addBall(this.worldWH / 2, this.worldWH - this.cell - 30, 500, 500);
+        this.ctrl = controller(this);
+        this.grid = this.ctrl.makeGrid(this.worldWH, this.cell);
+        this.bricks = this.ctrl.addBricks(this.worldWH, 100, this.brickSize, 10);
+        this.ball = this.ctrl.addBall(this.worldWH / 2, this.worldWH - this.cell - 30, 500, 500);
 
         this.physics.add.collider(this.ball, this.bricks, (ball, brick) => {
             

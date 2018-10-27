@@ -1,5 +1,5 @@
 import Phaser from '../Phaser';
-import Controller from './Controller';
+import controller from './controller';
 
 class Solar extends Phaser.Scene {
 
@@ -49,12 +49,12 @@ class Solar extends Phaser.Scene {
 
     create() {
 
-        this.Ctrl = Controller(this);
-        this.Ctrl.text();
+        this.ctrl = controller(this);
+        this.ctrl.text();
         this.worldWH = this.game.config.width;
-        this.planet = this.Ctrl.newPlanet(200);
-        this.planet = this.Ctrl.planetOrbit(this.planet, this.planetSpeed);
-        this.moon = this.Ctrl.newMoon(70);
+        this.planet = this.ctrl.newPlanet(200);
+        this.planet = this.ctrl.planetOrbit(this.planet, this.planetSpeed);
+        this.moon = this.ctrl.newMoon(70);
 
         let camera = this.cameras.add(0, 0, this.worldWH, this.worldWH);
         camera.transparent = false;
@@ -64,8 +64,8 @@ class Solar extends Phaser.Scene {
     
     update() {
 
-        this.planet = this.Ctrl.planetOrbit(this.planet, this.planetSpeed);
-        this.moon = this.Ctrl.moonOrbit(this.moon, this.planet, this.moonSpeed);
+        this.planet = this.ctrl.planetOrbit(this.planet, this.planetSpeed);
+        this.moon = this.ctrl.moonOrbit(this.moon, this.planet, this.moonSpeed);
     }
 }
 

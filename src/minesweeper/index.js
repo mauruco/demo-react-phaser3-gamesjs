@@ -1,5 +1,5 @@
 import Phaser from '../Phaser';
-import Controller from './Controller';
+import controller from './controller';
 
 
 class Minesweeper extends Phaser.Scene {
@@ -11,9 +11,9 @@ class Minesweeper extends Phaser.Scene {
     posX = [];
     posY = [];
     grid = []; // [y][x]
-    totalBoombs = 20;
+    totalBoombs = 30;
     totalPositions = 0;
-
+    
     static config = () => {
 
         return {
@@ -50,20 +50,14 @@ class Minesweeper extends Phaser.Scene {
     
     create() {
 
-        this.Ctrl = Controller(this);
-        this.Ctrl.controllers(this.totalBoombs);
-
-        this.events.addListener('boombsnumberchange', (totalBoombs) => {
-
-            this.scene.restart({totalBoombs});
-        });
-
+        this.ctrl = controller(this);
+        this.ctrl.controllers(this.totalBoombs);
         this.worldWidth = this.game.config.width;
         this.worldHeight = this.game.config.height;
-        this.posY = this.Ctrl.makePosY(this.boomHeight, this.worldHeight);
-        this.posX = this.Ctrl.makePosX(this.boomWidth, this.worldWidth);
-        this.grid = this.Ctrl.makeGrid(this.posY, this.posX);
-        this.grid = this.Ctrl.placeSprites(this.grid, {
+        this.posY = this.ctrl.makePosY(this.boomHeight, this.worldHeight);
+        this.posX = this.ctrl.makePosX(this.boomWidth, this.worldWidth);
+        this.grid = this.ctrl.makeGrid(this.posY, this.posX);
+        this.grid = this.ctrl.placeSprites(this.grid, {
             
             x: null,
             y: null,
@@ -71,18 +65,18 @@ class Minesweeper extends Phaser.Scene {
             boombsAllround: 0,
             clear: false
         });
-        this.totalPositions = this.Ctrl.countPositions(this.grid);
-        this.grid = this.Ctrl.placeBoombs(this.grid, this.posY, this.posX, this.totalBoombs);
-        this.grid = this.Ctrl.countBoombsAllround(this.grid, this.boomWidth, this.boomHeight);
-        this.grid = this.Ctrl.attachEvent(this.grid, (sprite) => {
+        this.totalPositions = this.ctrl.countPositions(this.grid);
+        this.grid = this.ctrl.placeBoombs(this.grid, this.posY, this.posX, this.totalBoombs);
+        this.grid = this.ctrl.countBoombsAllround(this.grid, this.boomWidth, this.boomHeight);
+        this.grid = this.ctrl.attachEvent(this.grid, (sprite) => {
 
             if(sprite.state.type === 'boomb')
-                return this.Ctrl.gameOver(this.grid, this.worldHeight, this.worldWidth);
+                return this.ctrl.gameOver(this.grid, this.worldHeight, this.worldWidth);
 
-            this.Ctrl.clearSpace(sprite.state.y, sprite.state.x, this.grid, this.totalPositions, this.boomHeight, this.boomWidth);
+            this.ctrl.clearSpace(sprite.state.y, sprite.state.x, this.grid, this.totalPositions, this.boomHeight, this.boomWidth);
 
             if(this.totalPositions - this.totalBoombs === 0)
-                return this.Ctrl.success(this.grid, this.worldHeight, this.worldWidth);
+                return this.ctrl.success(this.grid, this.worldHeight, this.worldWidth);
         });
     }
 }

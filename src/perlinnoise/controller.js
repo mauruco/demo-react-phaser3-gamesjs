@@ -4,25 +4,14 @@ import Particle from './Particle';
 import { random, mapRange } from '../helpers';
 import { pixel } from '../tools';
 
-const Controller = (scene) => {
+const controller = (scene) => {
 
     return {
 
         text: () => {
 
-            let opt = document.createElement('div');
-            opt.className = 'opt';
-            let body = document.getElementsByTagName('body')[0];
-            let span = document.createElement('span');
-            span.innerHTML = 'A suavidade de Perlin Noise!'
-            opt.appendChild(span);
-            body.appendChild(opt);
-            
-            let canvas = document.getElementsByTagName('canvas')[0];
-            canvas = canvas.getBoundingClientRect();
-            opt.style.top = (canvas.y - 35)+'px';
-            opt.style.left = canvas.x+'px';
-            opt.style.right = 'auto';
+            let opt = document.getElementById('opt');
+            opt.innerHTML = '<span class="inline">A suavidade de Perlin Noise!</span>';
         },
 
         simpleNoiseGraph: (noise, width) => {
@@ -177,4 +166,4 @@ const Controller = (scene) => {
     };
 };
 
-export default Controller;
+export default controller;

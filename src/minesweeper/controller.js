@@ -1,11 +1,4 @@
-const Controller = (scene) => {
-
-    // init
-    setTimeout(() => {
-
-        let canvas = document.getElementsByTagName('canvas')[0];
-        canvas.className = 'canvas-border';
-    });
+const controller = (scene) => {
 
     return {
 
@@ -16,40 +9,22 @@ const Controller = (scene) => {
 
         controllers: (totalBoombs) => {
 
-            if(document.getElementById('boombvalue'))
-                return;
+            window.sceneemit = (e) => {
 
-            let opt = document.createElement('div');
-            let body = document.getElementsByTagName('body')[0];
-            opt.className = 'opt';
-            let inline = document.createElement('span');
-            inline.innerHTML = 'Total Bombs (max 99):';
-            let inp = document.createElement('input');
-            inp.type = 'number';
-            inp.value = totalBoombs;
-            inp.id = 'boombvalue';
-            inp.max = '99';
-            let button = document.createElement('button');
-            button.innerHTML = 'APPLY';
-            button.className = 'dark';
-            button.onclick = () => {
+                e.preventDefault();
+                scene.events.emit('boombsnumberchange')
+            };
+            let opt = document.getElementById('opt');
+            opt.innerHTML = '<span class="inline">Total Bombs (max 99): </span><input type="number" value="'+totalBoombs+'" /><button class="dark" onclick="window.sceneemit(event)">APPLY</button>';
 
+            scene.events.removeAllListeners(['boombsnumberchange']);
+            scene.events.addListener('boombsnumberchange', () => {
+    
+                let inp = document.querySelector('#opt input');
                 if(inp.value > 99)
                     inp.value = 99;
-
-                scene.events.emit('boombsnumberchange', inp.value);
-            };
-
-            opt.appendChild(inline);
-            opt.appendChild(inp);
-            opt.appendChild(button);
-            body.appendChild(opt);
-            
-            let canvas = document.getElementsByTagName('canvas')[0];
-            canvas = canvas.getBoundingClientRect();
-            opt.style.top = (canvas.y - 40)+'px';
-            opt.style.left = canvas.x+'px';
-            opt.style.right = 'auto';
+                scene.scene.restart({totalBoombs: inp.value});
+            });
         },
 
         makePosX: (boomWidth, worldWidth) => {
@@ -100,7 +75,7 @@ const Controller = (scene) => {
 
         placeSprites: (grid, state) => {
 
-            scene.Ctrl.walkGrid(grid, (posY, posX) => {
+            scene.ctrl.walkGrid(grid, (posY, posX) => {
 
                 let sprite = scene.add.sprite(posX, posY, 'ready');
                 sprite.state = {
@@ -119,7 +94,7 @@ const Controller = (scene) => {
         countPositions: (grid) => {
 
             let totalPostions = 0;
-            scene.Ctrl.walkGrid(grid, () => {
+            scene.ctrl.walkGrid(grid, () => {
                 
                 totalPostions++;
             });
@@ -131,8 +106,8 @@ const Controller = (scene) => {
 
             while(true) {
 
-                let x = scene.Ctrl.randomArrayEle(posX);
-                let y = scene.Ctrl.randomArrayEle(posY);
+                let x = scene.ctrl.randomArrayEle(posX);
+                let y = scene.ctrl.randomArrayEle(posY);
 
                 if(grid[y][x].state.type === 'boomb')
                 continue;
@@ -149,7 +124,7 @@ const Controller = (scene) => {
 
         attachEvent: (grid, onCklickHandler) => {
 
-            scene.Ctrl.walkGrid(grid, (posY, posX) => {
+            scene.ctrl.walkGrid(grid, (posY, posX) => {
 
                 grid[posY][posX].setInteractive({ useHandCursor: true });
                 grid[posY][posX].on('pointerup', () => onCklickHandler(grid[posY][posX]));
@@ -160,7 +135,7 @@ const Controller = (scene) => {
 
         countBoombsAllround: (grid, boomWidth, boomHeight) => {
 
-            scene.Ctrl.walkGrid(grid, (posY, posX) => {
+            scene.ctrl.walkGrid(grid, (posY, posX) => {
 
                 if(grid[posY][posX].state.type === 'boomb'){
 
@@ -214,29 +189,28 @@ const Controller = (scene) => {
                 if(state.boombsAllround)
                     return scene.add.text(x -7, y-12, state.boombsAllround, { fontSize: '24px', fill: '#000' });
 
-    
                 // topLeft
-                scene.Ctrl.clearSpace(parseInt(y)-boomHeight, parseInt(x)-boomWidth, grid, totalPositions, boomHeight, boomWidth);
+                scene.ctrl.clearSpace(parseInt(y)-boomHeight, parseInt(x)-boomWidth, grid, totalPositions, boomHeight, boomWidth);
                 // topRigh
-                scene.Ctrl.clearSpace(parseInt(y)-boomHeight, parseInt(x)+boomWidth, grid, totalPositions, boomHeight, boomWidth);
+                scene.ctrl.clearSpace(parseInt(y)-boomHeight, parseInt(x)+boomWidth, grid, totalPositions, boomHeight, boomWidth);
                 // topCenter
-                scene.Ctrl.clearSpace(parseInt(y)-boomHeight, x, grid, totalPositions, boomHeight, boomWidth);
+                scene.ctrl.clearSpace(parseInt(y)-boomHeight, x, grid, totalPositions, boomHeight, boomWidth);
                 // bottomLeft
-                scene.Ctrl.clearSpace(parseInt(y)+boomHeight, parseInt(x)-boomWidth, grid, totalPositions, boomHeight, boomWidth);
+                scene.ctrl.clearSpace(parseInt(y)+boomHeight, parseInt(x)-boomWidth, grid, totalPositions, boomHeight, boomWidth);
                 // bottomRight
-                scene.Ctrl.clearSpace(parseInt(y)+boomHeight, parseInt(x)+boomWidth, grid, totalPositions, boomHeight, boomWidth);
+                scene.ctrl.clearSpace(parseInt(y)+boomHeight, parseInt(x)+boomWidth, grid, totalPositions, boomHeight, boomWidth);
                 // bottomCenter
-                scene.Ctrl.clearSpace(parseInt(y)+boomHeight, x, grid, totalPositions, boomHeight, boomWidth);
+                scene.ctrl.clearSpace(parseInt(y)+boomHeight, x, grid, totalPositions, boomHeight, boomWidth);
                 // left
-                scene.Ctrl.clearSpace(y, parseInt(x)-boomWidth, grid, totalPositions, boomHeight, boomWidth);
+                scene.ctrl.clearSpace(y, parseInt(x)-boomWidth, grid, totalPositions, boomHeight, boomWidth);
                 // right
-                scene.Ctrl.clearSpace(y, parseInt(x)+boomWidth, grid, totalPositions, boomHeight, boomWidth);
+                scene.ctrl.clearSpace(y, parseInt(x)+boomWidth, grid, totalPositions, boomHeight, boomWidth);
             }
         },
 
         clearAll: (grid) => {
         
-            scene.Ctrl.walkGrid(grid, (posY, posX) => {
+            scene.ctrl.walkGrid(grid, (posY, posX) => {
 
                 grid[posY][posX].disableInteractive();
 
@@ -250,7 +224,7 @@ const Controller = (scene) => {
 
         success: (grid, worldHeight, worldWidth) => {
 
-            scene.Ctrl.clearAll(grid);
+            scene.ctrl.clearAll(grid);
             setTimeout(()=>{
     
                 let sprite = scene.add.sprite(worldWidth / 2, worldHeight / 2, 'success').setInteractive({ useHandCursor: true });
@@ -263,7 +237,7 @@ const Controller = (scene) => {
     
         gameOver: (grid, worldHeight, worldWidth) => {
     
-            scene.Ctrl.clearAll(grid);
+            scene.ctrl.clearAll(grid);
             setTimeout(()=>{
     
                 let sprite = scene.add.sprite(worldWidth / 2, worldHeight / 2, 'gameover').setInteractive({ useHandCursor: true });
@@ -276,4 +250,4 @@ const Controller = (scene) => {
     };
 };
 
-export default Controller;
+export default controller;

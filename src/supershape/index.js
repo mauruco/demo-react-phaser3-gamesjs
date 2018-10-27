@@ -1,5 +1,5 @@
 import Phaser from '../Phaser';
-import { mapRange, inspect } from '../helpers';
+import { mapRange } from '../helpers';
 import { pixel } from '../tools';
 
 class Supershape extends Phaser.Scene {
@@ -29,20 +29,8 @@ class Supershape extends Phaser.Scene {
 
     text() {
 
-        let opt = document.createElement('div');
-        opt.className = 'opt';
-        let body = document.getElementsByTagName('body')[0];
-        let span = document.createElement('span');
-        span.innerHTML = 'http://paulbourke.net/geometry/supershape/'
-        opt.appendChild(span);
-        body.appendChild(opt);
-        
-        this.canvas = document.getElementsByTagName('canvas')[0];
-        this.canvas.style.cursor = 'crosshair';
-        let rect = this.canvas.getBoundingClientRect();
-        opt.style.top = (rect.y - 35)+'px';
-        opt.style.left = rect.x+'px';
-        opt.style.right = 'auto';
+        let opt = document.getElementById('opt');
+        opt.innerHTML = '<span class="inline">Supershape!</span>';
     }
 
     supershape(theta, m, n) {
