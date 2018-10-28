@@ -15,7 +15,7 @@ const inspect = (obj) => {
     
 }
 
-const random = (max, min) => Math.floor(Math.random()*(max-(min)+1)+(min));
+const random = (min, max, floor = true) => floor ? Math.floor(Math.random()*(max-(min)+1)+(min)) : Math.random()*(max-(min)+1)+(min);
 
 const randomArrayEle = (arr) => arr[Math.floor(Math.random() * arr.length)];
 

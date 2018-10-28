@@ -127,10 +127,10 @@ const controller = (scene) => {
             let particles = [];
             for(let i = 0; i < 100; i++){
 
-                let y =  random(0, height) + i;
-                y = y > 600 ? random(0, height) : y;
+                let y =  (Math.random() * height * 2) >> 1 + i;
+                y = y > height ? height : y;
 
-                particles.push(new Particle(random(0, width), y));
+                particles.push(new Particle((Math.random() * width * 2) >> 1, y));
             }
 
             return particles;

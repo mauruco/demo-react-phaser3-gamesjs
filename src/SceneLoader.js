@@ -12,6 +12,7 @@ import Supershape from './supershape';
 import Colorpicker from './colorpicker';
 import Display from './display';
 import Pathfinderfluid from './pathfinderfluid';
+import Perceptron from './perceptron';
 
 const SceneLoader = () => {
 
@@ -67,6 +68,9 @@ const SceneLoader = () => {
 
     if(hash === '#pathfinderfluid')
         new Phaser.Game(Pathfinderfluid.config());
+
+    if(hash === '#perceptron')
+        new Phaser.Game(Perceptron.config());
 }
 
 export default SceneLoader;

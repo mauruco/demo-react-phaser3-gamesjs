@@ -38,7 +38,7 @@ class Starfield extends Phaser.Scene {
         opt.innerHTML = '<span class="inline">Speed: </span><input type="number" value="10" /><button class="dark" onclick="window.sceneemit()">APPLY</button>';
     }
 
-    random(max, min) {
+    random(min, max) {
 
         return Math.floor(Math.random()*(max-(min)+1)+(min));
     }
@@ -51,8 +51,8 @@ class Starfield extends Phaser.Scene {
             let star = {
                 color: 0xffffff,
                 size: 0.1,
-                x: this.random((this.worldWidth / 2), - (this.worldWidth / 2)),
-                y: this.random((this.worldHeight / 2), - (this.worldHeight / 2)),
+                x: this.random(- (this.worldWidth / 2), (this.worldWidth / 2)),
+                y: this.random(- (this.worldHeight / 2), (this.worldHeight / 2)),
                 z: this.random(0, this.worldLength),
                 starObj: null,
                 line: null
