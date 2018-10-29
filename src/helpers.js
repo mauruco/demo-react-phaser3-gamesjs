@@ -1,5 +1,4 @@
 // converter um array[x][y] para um array de uma dimensão = array[(x + y * width) * 4];
-
 const inspect = (obj) => {
 
     console.log(`%c${obj.constructor.name}`, 'color: #00FFFF');
@@ -15,7 +14,7 @@ const inspect = (obj) => {
     
 }
 
-const random = (min, max, floor = true) => floor ? Math.floor(Math.random()*(max-(min)+1)+(min)) : Math.random()*(max-(min)+1)+(min);
+const random = (min, max) => Math.floor(Math.random()*(max-(min)+1)+(min));
 
 const randomArrayEle = (arr) => arr[Math.floor(Math.random() * arr.length)];
 

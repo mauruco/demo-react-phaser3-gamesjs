@@ -1,57 +1,91 @@
-import { random } from '../helpers';
 class Perceptron {
 
-    // um perctron recebe dois inputs (será que funciona com 3? tipo terceira dimensão)
-    // um perctron da um peso para cada input
-    // um perctron faz um guess dos inputs, multicando os pesos pelos inputs  e somando (peso.1 * input.1 + peso2 * input2 + ....)
-    // a função "ativação" converte a resposta para -1 e 1
-    // um perctron treina seus pesos caso sua resposta "guess" foi diferente da resposta certa, até acertar
+    // Percptron = Universal function aproximater
+    // Um perctron da um peso para cada input
+    // Um perctron faz um guess dos inputs, multicando os pesos pelos inputs  e somando (peso.1 * input.1 + peso2 * input2)
+    // A função "ativação" converte a resposta para -1 e 1
+    // Um perctron treina seus pesos caso sua resposta "guess" foi diferente da resposta certa, até acertar
+    // Um pecptron sozinho só é capaz deseparar dados que se literalmente pode separa por uma única linha
 
-    // usei aqui x para input.1 e y para input.2
-    weights = []; // weight for x,  weight for y // weight.input1, weight.input2
-    learningRate = 0.1; // uma porcentagem de aprendizado, para diminuir a magnetude da diferença do erro pro input 
+    weights = []; // Weight for inp1,  weight for inp2, weight for BIAS
+    learningRate = 0.1; // Uma porcentagem de aprendizado, para diminuir a magnetude da diferença do erro pro input 
 
-    constructor(amountWeights = 2) {
+    // BIAS
+    // BIAS serai o terceiro input do perceptron, e ele tem seu peso tambem
+    // BIAS PESO é a elevação da linha, acima ou abaixo do 0,0 (inp1 = 0, inp2 = 0)
+    // O valor do BIAS será sempre 1!
+    // Oq o Perceptron está tentando aprender é a formula a baixo
+    /*
+                WeightInp1
+        inp1 = ------------ * inp2 + WeightBias * 1 (BIAS)
+                WeightInp2
+    */
+
+    // PQ BIAS?
+    // Imagine que input1 = 0 e input2 = 0
+    // Se vc multiplicar com os pesos vc recebera logicamente 0, que não seria correto
+    // Pq talvez 0,0 está abaixo da usa linha
+
+    constructor(amountWeights = 3) {
 
         // inizializando weights
         for(let i = 0; i < amountWeights; i++)
             this.weights[i] = Math.random() * 2 -1;
     }
 
-    // supervise algorith
-    // o novopeso = o peso + (delta) || delta é um ajuste calculado do erro para resposta certa ( delta = error * input )
-    // logo esse delta pode ter uma maginetude muito grande, vamos dimuir ela multiplicando com a varavél learningrate 
-    // logo novo peso = peso + (error * input * leraningrate)
+    // Supervise algorith
+    // O novopeso = o peso + (delta) || delta é um ajuste calculado do erro para resposta certa ( delta = error * input )
+    // Logo esse delta pode ter uma maginetude muito grande, vamos dimuir ela multiplicando com a varavél learningrate 
+    // Logo novo peso = peso + (error * input * leraningrate)
 
-    train(error, inputs) {
+    supervisor(error, inputs) {
 
-        let weights = this.weights;
+        // A formula de aprximação
+        /*
+            new weightInput1 = weightInput1 * input1;
+            new weightInput2 = weightInput2 * input2;
+            new weightBIAS   = weightBias * BIAS;
+        */
+        this.weights = this.weights.map((w, i) => {
 
-        for(let i = 0; i < weights.length; i++){
-
-            weights[i] += (error * inputs[i]) * this.learningRate;
-        }
-
-        this.weights = weights;
+            w += (error * inputs[i]) * this.learningRate;
+            return w;
+        });
     }
 
     // activation function (feed forward)
     sign(sum) {
         
-        // >= lidar com o valo zero
+        // >= Lidar com o valo zero
         return sum >= 0 ? 1 : -1;
     }
 
     // inputs / point = x, y
     guess(inputs) {
 
-        // sum += Input0 * Weight0 + Input1 * Weight1 + .....
+        // Sum += Input1 * Weight1 + Input2 * Weight2 + WeightBias * BIAS
         let sum = 0;
 
-        for(let i = 0; i < this.weights.length; i++) {
+        this.weights.map((w, i) => {
+            
+            sum += inputs[i] * w;
+        });
 
-            sum += inputs[i] * this.weights[i];
-        }
+        // Podemos a partir desse calculo criar uma linha aonde o pecptron pensa que esta
+        /*
+        
+            PENSANDO NO CAULCULO
+
+            weightInp1 * input1 + WeightInp2 * input2 + WeightBIAS * BIAS (BIAS === 1) = 0
+
+            LOGOG PODEMOS CALCULAR OS OUTROS
+
+                      - (WeightInp2 * input2) - (WeightBIAS * BIAS)
+            input1 =  ----------------------------------------------
+                                    weightInput1
+
+            E ASSIM CRIAR UMA LINHA DE AONDE O PERCPTRON PENSA QUE ESTÁ
+        */
 
         let output = this.sign(sum);
 
@@ -61,17 +95,12 @@ class Perceptron {
     guessAndTrain(inputs, correctAnswer) {
 
         let output = this.guess(inputs);
-
+        
+        // if i guess wrong
         if(output !== correctAnswer){
-                
-            // i guess wrong
+            
             let error = correctAnswer - output; // erro pode ser -2 ou 2. !!ANTENÇÃO: (output - correctAnswer) !=== (correctAnswer - output)
-
-            for(let i = 0; i < this.weights.length; i++){
-
-                this.weights[i] += (error * inputs[i]) * this.learningRate;
-                this.weights[i] += (error * inputs[i]) * this.learningRate;
-            }
+            this.supervisor(error, inputs)
         }
 
         return output;
