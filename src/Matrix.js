@@ -52,14 +52,39 @@ class Matrix {
 
         PS: Não é necessário calcular a proporção, Expl:  ->  Hidden1Error = O1WH1 * Error1 + O2WH1 * Error2 & Hidden2Error = O2WH2 * Error2 + O1WH2 * Error1 
 
-        CONCLUSÃO
+        CONCLUSÃO XD
 
         A MATRIX DE WEIGTHS É: transpose(weights.matrix) * erros.matrix === HiddenErros (level anterior, acima)
-        --            --                --            --    --      --                --                              --
-        | O1WH1, O1WH2 |                | O1WH1, O2WH1 |    | Error1 |                | O1WH1 * Error1, O2WH1 * Error1 | 
-        ----------------  TRANSPOSE ->  ---------------- X  ---------- = HiddenErros =---------------- 
-        | O2WH1, O2WH2 |                | O1WH2, O2WH2 |    | Error2 |                | O1WH2 * Error2, O2WH2 * Error2 |
-        --            --                --            --    --      --                --                              --
+        --            --                --            --    --      --                 --                              --
+        | O1WH1, O1WH2 |                | O1WH1, O2WH1 |    | Error1 |                 | O1WH1 * Error1, O2WH1 * Error1 | 
+        ----------------  TRANSPOSE ->  ---------------- X  ---------- = HiddenErros = ---------------------------------- 
+        | O2WH1, O2WH2 |                | O1WH2, O2WH2 |    | Error2 |                 | O1WH2 * Error2, O2WH2 * Error2 |
+        --            --                --            --    --      --                 --                              --
+
+        ----------------------------------------------
+        APROXIMÇÃO GRADIENTE ATRVÉS DO ERROS ALGORITMO
+        ----------------------------------------------
+
+        lr = learning rate
+        LEMBRA y = Mx + B OU EM MATRIX Y =  WI1 * I1 + WI2 * I2 + WI3 * I3 ....
+
+        NO CASO DE
+        y = Mx + B
+        
+        deltaM = lr * x * error;
+        deltaB = lr * error;
+
+        --------------
+        MATRIX VERSION
+        --------------
+
+        Y = sigmoid(W * I + B)
+
+        s'(x) = derivado se sigmoid é clculado  s'(x) = s(x) + (1 - s(x))
+
+        deltaAllWeightsHiddenToOutput.matrix = [ lr(elementwise multiplication) * ErrorOutput(matrix)  *  {s'(x) == (O*(1-O)(elementwise multiplication O e não 0)} ] * transpose(Hidden.matrix( O ouput de hidden ))
+
+        deltaAllWeightsInputToHidden.matrix  = [ lr(elementwise multiplication) * ErrorHidden(matrix)  *  {s'(x) == (H*(1-H)(elementwise multiplication O e não 0)} ] * transpose(Input.matrix( O Input matrix ))
     */
 
     constructor(rows, cols) {
@@ -104,8 +129,8 @@ class Matrix {
     }
 
     // elementwise multiplication
-    // if n is number is a scalar function
-    mult(m) {
+    // if n is number is a scalar function (Hadamar product)
+    multiply(m) {
         
         this.loopThrough((i, j) => {
             
@@ -152,6 +177,18 @@ class Matrix {
             return;
         console.log(`ROWS: ${this.rows}, COLS: ${this.cols}`);
         console.table(this.data);
+    }
+
+    static map(a, apply) {
+
+        let b = new Matrix(a.rows, a.cols);
+
+        b.loopThrough((i, j) => {
+
+            b.data[i][j] = apply(a.data[i][j], i, j);
+        });
+
+        return b;
     }
 
     static subtract(a, b) {

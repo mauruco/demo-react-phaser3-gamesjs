@@ -3,6 +3,7 @@ import { inspect, print } from '../helpers';
 import controller from './controller';
 import NeuralNetwork from './NeuralNetwork'; 
 import M from '../Matrix'; 
+import Matrix from '../Matrix';
 
 class Neural extends Phaser.Scene {
     
@@ -24,14 +25,21 @@ class Neural extends Phaser.Scene {
 
     create() {
 
-        this.nn = new NeuralNetwork(2, 2, 2);
-        // let output = this.nn.feedforward([1, 0], false);
-        // print(output.data);
+        this.nn = new NeuralNetwork(2, 2, 1, 1);
 
-        this.nn.train([1,0], [2,2]);
+        
+        // this.nn.train([0,1], [1]);
+        this.i = 0;
+    }
+    
+    update() {
+        
+        this.i++;
+        if(this.i < 60)
+        return;
+        this.i = 0;
 
-        // print('output');
-
+        this.nn.train([0,1], [1]);
     }
 }
 
