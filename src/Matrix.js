@@ -3,41 +3,63 @@ class Matrix {
     /*
         Feedforward Algorithm
         ---------------------
-        Hidden[i] = Weights[i][j] * Iinputs[i]
+        Weights * Inputs + BIAS -> ACTIVATE()
 
         input layer                 hidden layer                                   OUTPUT LAYER
 
-        input1 < i1                                     GERA WEIGHTS                                                                 GERA WEIGHTS
-                        > i1 & i2 & i3 & B1 > Hidden1 [ weight1Input1 & w1i2 & w1i3 & wb] ACTIVATE1( W * I + B) <
-        input2 < i2                                                                                                     A1 & A2 & HB1  > OUTPUT [ws1 & ws2 & HB1] ACTIVATEOUTPUT ( W * A + B ) > RESULT
-                        > i1 & i2 & i3 & B1 > Hidden2 [ weight2Input1 & w2i2 & w2i3 & wb] ACTIVATE2( W * I + B) <
-        input3 < i3
-                                                                                          HiddenBias <
-        InputBIAS1 <
+        input1 ->                                    GERA WEIGHTS                                                                 GERA WEIGHTS
+                    I1, I2, I3 -> Hidden1 [ H1WI1, H1WI2, HWI3] -> forward ACTIVATE( W * I + B) ->
+        input2 ->                                                                                   -> Output1 [O1WH1, O1WH2] -> forward ACTIVATE( W * A + B ) -> RESULT
+                    I1, I2, I3 -> Hidden2 [ H2WI1, H2WI2, HWI3] -> forward ACTIVATE( W * I + B) ->
+        input3 ->
+                                                                                     HiddenBias ->
+        IBIAS1 ->
 
-        Weights * Inputs = SUM
-        --              --   --  --   --                                 --
-        | wi11 wi21 wi31 |   | i1 |   | w1i1 * i1 + w1i2 * i2 + w1i3 * i3 |
-        ------------------ X ------ = -------------------------------------
-        | wi12 wi22 wi32 |   | i2 |   | w2i1 * i1 + w2i2 * i2 + w2i3 * i3 |
-        --              --   ------   --                                 --
-                             | i3 |      
-                             --  --
+        Weights * Inputs + BIAS -> ACTIVATE()
+        --                   --   --  --   --                                    --   --      --
+        | H1WI1, H1WI2, H1WI3 |   | I1 |   | H1WI1 * I1 + H1WI2 * I2 + H1WI3 * I3 |   | HBIAS1 |
+        ----------------------- X ------ = ---------------------------------------- + ----------
+        | H2WI1, H2WI2, H2WI3 |   | I2 |   | H2WI1 * I1 + H2WI2 * I2 + H2WI3 * I3 |   | HBIAS2 |
+        --                   --   ------   --                                    --   --      --
+                                  | I3 |      
+                                  --  --
 
+        ACTIVATE = sigmoid( Weights * Inputs + BIAS ) 
         
-        h[i] = sigmoid( w[i][j] * i[i] + BIAS[i] ) 
-        
-        output tbm tem seu weights e própios BIAS paras os hidden e tbm passa pela função de ativação
-
-        O    = sigmoid( w[i] * h[i] + BIAS[i] )
-
-        E isso é o rasultado
-
-
         ps:
         SIGMOID é a função de ativação, muito comum
         sigmoid = f(x) = 1/(1 + e^-x)
         e (constant) = eulersnumber, naturallogarithmo number = 2.71827
+
+
+
+
+        Error Propagation Algorithm
+        ---------------------------
+
+        2 to 1 connection
+        -----------------
+        Hidden1 -> 0.2 (0.2 é 67% do erro 0.3) | ErrorH1 = (O1WH1/(O1WH1+O1WH2)) * Error1
+                                                                                            Out1 [O1WH1, O1WH2] -> (guess) 0.7 | expected = 1.0 | Error1 = expected - guess = 0.3  
+        Hidden2 -> 0.1 (0.1 é 33% do erro 0.3) | ErrorH2 = (O1WH2/(O1WH2+O1WH1)) * Error1
+
+        2 to 2 connection
+        -----------------
+        Hidden1 -> Hidden1Error = (O1WH1/(O1WH1+O1WH2)) * Error1 + (O2WH1/(O2WH1 + O2WH2)) * Error2
+                                                                                                       Out1 [O1WH1, O1WH2] -> (guess) 0.7 | expected = 1.0 | Error1 = expected - guess = 0.3
+                                                                                                       Out2 [O2WH1, O2WH2] -> (guess) 0.4 | expected = 0.0 | Error2 = expected - guess = -0.4
+        Hidden2 -> Hidden2Error = (O1WH2/(O1WH2+O1WH1)) * Error1 + (O2WH2/(O2WH2 + O2WH1)) * Error2
+
+        PS: Não é necessário calcular a proporção, Expl:  ->  Hidden1Error = O1WH1 * Error1 + O2WH1 * Error2 & Hidden2Error = O2WH2 * Error2 + O1WH2 * Error1 
+
+        CONCLUSÃO
+
+        A MATRIX DE WEIGTHS É: transpose(weights.matrix) * erros.matrix === HiddenErros (level anterior, acima)
+        --            --                --            --    --      --                --                              --
+        | O1WH1, O1WH2 |                | O1WH1, O2WH1 |    | Error1 |                | O1WH1 * Error1, O2WH1 * Error1 | 
+        ----------------  TRANSPOSE ->  ---------------- X  ---------- = HiddenErros =---------------- 
+        | O2WH1, O2WH2 |                | O1WH2, O2WH2 |    | Error2 |                | O1WH2 * Error2, O2WH2 * Error2 |
+        --            --                --            --    --      --                --                              --
     */
 
     constructor(rows, cols) {
@@ -73,11 +95,11 @@ class Matrix {
             throw new Error('Matrix do not match!');
     }
 
-    randomize(min = 0, max = 10) {
+    randomize(min = -1, max = 1, floor = false) {
 
         this.loopThrough((i, j) => {
 
-            this.data[i][j] = Math.floor(Math.random()*(max-(min)+1)+(min));
+            this.data[i][j] = floor ? Math.floor(Math.random()*(max-(min)+1)+(min)) : Math.random()*(max-(min)+1)+(min);
         });
     }
 
@@ -132,8 +154,43 @@ class Matrix {
         console.table(this.data);
     }
 
+    static subtract(a, b) {
+
+        let c = new Matrix(a.rows, a.cols);
+
+        c.loopThrough((i, j) => {
+            
+            if(b instanceof Matrix){
+
+                c.checkMatch(b);
+                c.data[i][j] = a.data[i][j] - b.data[i][j];
+            }else{
+
+                c.data[i][j] = a.data[i][j] - b;
+            }
+        });
+
+        return c;
+    }
+
+    static toArray(a) {
+
+        return [...a.data];
+    }
+
+    static fromArray(arr) {
+        
+        let a = new Matrix(arr.length, 1);
+        a.loopThrough((i, j) => {
+
+            a.data[i][j] = arr[i];
+        });
+        return a;
+    }
+
     // Transpose
     /*
+        De vertical para horizontal
              a | b | c
         M1 = ---------
              d | e | f
@@ -201,25 +258,47 @@ class Matrix {
 
     */
     static multiply(a, b) {
+        
+        if(a.cols !== b.rows){
 
-        if(a.rows !== b.cols)
-            throw new Error('A Matrix rows do not match B Matrix cols!');
+            console.log(`A COLS: ${a.cols}, B ROWS: ${b.rows}`);
+            throw new Error('A Matrix cols do not match B Matrix rows!');
+        }
 
         let c = new Matrix(a.rows, b.cols);
 
-        for(let i = 0 ; i < c.rows; i++) {
-            
-            for(let j = 0; j < c.cols; j++) {
-                
-                let sum = 0;
-                for(let k = 0; k < a.cols; k++){
+        // return c;
 
-                    sum += a.data[i][k] * b.data[k][j];
-                }
-                
-                c.data[i][j] = sum;
+        c.loopThrough((i, j) => {
+            
+            let sum = 0;
+            for(let k = 0; k < a.cols; k++){
+    
+                sum += a.data[i][k] * b.data[k][j];
             }
-        }
+            
+            c.data[i][j] = sum;
+        });
+
+        // for(let i = 0 ; i < c.rows; i++) {
+            
+        //     for(let j = 0; j < c.cols; j++) {
+                
+        //         let sum = 0;
+        //         console.log(`sum[${i}][${j}] = ${sum}`);
+        //         // i = 0
+        //         // j = 0
+        //         // k = 0
+        //         for(let k = 0; k < a.cols; k++){
+
+        //             console.log(`sum = ${sum}, sum += a.data[${i}][${k}] (${a.data[i][k]}) * b.data[${k}][${j}] (${b.data[k][j]})`);
+        //             sum += a.data[i][k] * b.data[k][j];
+        //         }
+                
+        //         console.log(`sum[${i}][${j}] = ${sum}`);
+        //         c.data[i][j] = sum;
+        //     }
+        // }
 
         return c;
     }

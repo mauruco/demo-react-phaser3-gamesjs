@@ -13,7 +13,7 @@ import Colorpicker from './colorpicker';
 import Display from './display';
 import Pathfinderfluid from './pathfinderfluid';
 import Perceptron from './perceptron';
-import Matrix from './matrix';
+import Neural from './neural';
 
 export const sceneLoader = () => {
 
@@ -73,6 +73,6 @@ export const sceneLoader = () => {
     if(hash === '#perceptron')
         new Phaser.Game(Perceptron.config());
 
-    if(hash === '#matrix')
-        new Phaser.Game(Matrix.config());
+    if(hash === '#neural')
+        new Phaser.Game(Neural.config());
 }
