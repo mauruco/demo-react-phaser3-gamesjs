@@ -1,7 +1,5 @@
 import '../node_modules/phaser/dist/phaser.js';
-import SceneLoader from './SceneLoader';
+import { sceneLoader } from './sceneLoader';
 import './index.css';
 
-new SceneLoader();
-
-
+sceneLoader();

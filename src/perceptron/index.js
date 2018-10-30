@@ -59,10 +59,10 @@ class Perceptron extends Phaser.Scene {
 
     update() {
 
-        this.i++;
-        if(this.i < 10)
-            return;
-        this.i = 0;
+        // this.i++;
+        // if(this.i < 10)
+        //     return;
+        // this.i = 0;
 
         this.graph.clear();
         this.ctrl.drawLine(this.calcY);

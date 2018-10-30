@@ -48,8 +48,8 @@ const controller = (scene) => {
                     input1: x,
                     input2: y,
                     BIAS: 1,
-                    x: mapRange(x, -1, 1, -(scene.width>>1), (scene.width>>1)),
-                    y: mapRange(y, -1, 1, (scene.height>>1), -(scene.height>>1)),  // y tá invertido pra funcionar com cartisan clássico
+                    x: scene.ctrl.pixelX(x),
+                    y: scene.ctrl.pixelY(y),  // y tá invertido pra funcionar com cartisan clássico
                     correctAnswer
                 });
             }

@@ -13,8 +13,9 @@ import Colorpicker from './colorpicker';
 import Display from './display';
 import Pathfinderfluid from './pathfinderfluid';
 import Perceptron from './perceptron';
+import Matrix from './matrix';
 
-const SceneLoader = () => {
+export const sceneLoader = () => {
 
     let hash = window.location.hash;
     let as = document.getElementsByTagName('a');
@@ -71,6 +72,7 @@ const SceneLoader = () => {
 
     if(hash === '#perceptron')
         new Phaser.Game(Perceptron.config());
-}
 
-export default SceneLoader;
+    if(hash === '#matrix')
+        new Phaser.Game(Matrix.config());
+}
