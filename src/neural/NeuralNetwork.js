@@ -32,97 +32,90 @@ class NeuralNetwork {
         return x * (1 - x);
     }
 
-    feedforward(inputsArray, toArray = true) {
-
-        // generate hiddens ouputs
-        let inputs = Matrix.fromArray(inputsArray);
-        // this.weightsI.print();
-        // inputs.print();
-        let hiddens = Matrix.multiply(this.weightsHiddensGiveToInputs, inputs);
-        // hiddens.print();
-        hiddens.add(this.biasH);
-        // hiddens.print();
-        // activation function
-        hiddens.map(this.sigmoid);
-        // hiddens.print();
-        
-        // generate ouputs
-        let outputs = Matrix.multiply(this.weightsOutputsGiveToHiddens, hiddens);
-        outputs.add(this.biasO);
-        // activation function
-        outputs.map(this.sigmoid);
-
-        return toArray ? Matrix.toArray(outputs) : outputs;
+    guess(inputsArray, toArray = true) {
+     
+        let outsOut = this.feedforward(inputsArray);
+        return toArray ? Matrix.toArray(outsOut) : outsOut;
     }
 
-    train(inputsArray, targetsArray) {
+    feedforward(inputsArray) {
 
         // generate hiddens ouputs
         let inputs = Matrix.fromArray(inputsArray);
-        let hiddens = Matrix.multiply(this.weightsHiddensGiveToInputs, inputs);
+        let hiddensOut = Matrix.multiply(this.weightsHiddensGiveToInputs, inputs);
         // ads bias
-        hiddens.add(this.biasH);
+        hiddensOut.add(this.biasH);
         // activation function
-        hiddens.map(this.sigmoid);
+        hiddensOut.map(this.sigmoid);
         
         // generate ouputs
-        let outputs = Matrix.multiply(this.weightsOutputsGiveToHiddens, hiddens);
-        outputs.add(this.biasO);
+        let outsOut = Matrix.multiply(this.weightsOutputsGiveToHiddens, hiddensOut);
+        outsOut.add(this.biasO);
         // activation function
-        outputs.map(this.sigmoid);
+        outsOut.map(this.sigmoid);
 
+        return outsOut;
+    }
+
+    train(inputsArray, targetsArray, toArray = true) {
+
+        // generate hiddens ouputs
+        let inputs = Matrix.fromArray(inputsArray);
+        let hiddensOut = Matrix.multiply(this.weightsHiddensGiveToInputs, inputs);
+        // ads bias
+        hiddensOut.add(this.biasH);
+        // activation function
+        hiddensOut.map(this.sigmoid);
         
+        // generate ouputs
+        let outsOut = Matrix.multiply(this.weightsOutputsGiveToHiddens, hiddensOut);
+        outsOut.add(this.biasO);
+        // activation function
+        outsOut.map(this.sigmoid);
+
         // comparando guess com resposta
         let answers = Matrix.fromArray(targetsArray);
-        let outErrors = Matrix.subtract(answers, outputs);
+        let outErrors = Matrix.subtract(answers, outsOut);
         
         // calculate gradientes de ajuste
         // deltaAllWeightsHiddenToOutput.matrix = [ lr(elementwise multiplication) * ErrorOutput(matrix)  *  {s'(x) == (O*(1-O)(elementwise multiplication O e não 0)} ] * transpose(Hidden.matrix( O ouput de hiddens ))
-        let gradients = Matrix.map(outputs, this.diveredSigmoid); // Copy off outputs    // *  {s'(x) == (O*(1-O)(elementwise multiplication O e não 0)}
-
+        let gradients = Matrix.map(outsOut, this.diveredSigmoid); // Copy off outputs    // *  {s'(x) == (O*(1-O)(elementwise multiplication O e não 0)}
+        
         gradients.multiply(outErrors);                                                   // * ErrorOutput(matrix)
         gradients.multiply(this.learningRate);                                           // * lr(elementwise multiplication)
-
+        
         // BIAS OUT
         this.biasO.add(gradients);
-
+        
         // calculate deltas
-        let hiddensTransposed = Matrix.transpose(hiddens);
+        let hiddensTransposed = Matrix.transpose(hiddensOut);
         let deltaHiddensToOutputs = Matrix.multiply(gradients, hiddensTransposed);       // * transpose(Hidden.matrix( O ouput de hiddens )
-
-        // finalmente ajustando os weights
-        this.weightsOutputsGiveToHiddens.add(deltaHiddensToOutputs);
-
-        // calculando hiddenslaers erros
+        
+        // calculando hiddenslayers erros
         let weightsOutputsGiveToHiddensTransposed = Matrix.transpose(this.weightsOutputsGiveToHiddens);
         let hiddensErros = Matrix.multiply(weightsOutputsGiveToHiddensTransposed, outErrors);
 
+        
         // gradientes de hiddens
-        // hiddens == output de hiddens
-        // hiddens.print();
-        let Hgradients = Matrix.map(hiddens, this.diveredSigmoid);
+        let Hgradients = Matrix.map(hiddensOut, this.diveredSigmoid);
         Hgradients.multiply(hiddensErros);
         Hgradients.multiply(this.learningRate);
         
         // BIAS Hidden
         this.biasH.add(Hgradients);
-        // this.biasH.print();
-
+        
         // inputs to hidden deltas
         let inputsTranposed = Matrix.transpose(inputs);
-
+        
         // Hgradients.print();
         // inputsTranposed.print();
         let deltaInputsToHiddens = Matrix.multiply(Hgradients, inputsTranposed);
-
+        
+        // finalmente ajustando os weights
+        this.weightsOutputsGiveToHiddens.add(deltaHiddensToOutputs);
         this.weightsHiddensGiveToInputs.add(deltaInputsToHiddens);
 
-        outputs.print();
-        // answers.print();
-        // outErrors.print();
-
-        // this.weightsOutputsGiveToHiddens.print();
-        // this.weightsHiddensGiveToInputs.print();
+        return toArray ? Matrix.toArray(outsOut) : outsOut;
     }
 }
 
