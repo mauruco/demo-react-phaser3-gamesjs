@@ -53,66 +53,51 @@ const controller = (scene) => {
             return posY;
         },
 
-        makeGrid: (posY, posX) => {
+        // makeGrid: (posY, posX) => {
+        makeGrid: () => {
 
-            let grid = []; 
-            for(let y in posY) {
+            let grid = [];
+            for(let y = 0; y < scene.height / scene.scl; y++){
 
-                grid[posY[y]] = [];
-                for(let x in posX)
-                    grid[posY[y]][posX[x]] = true;
+                grid[y] = [];
+                for(let x = 0; x < scene.width / scene.scl; x++){
+
+                    grid[y][x] = scene.add.image(x * scene.scl + (scene.scl>>1), y * scene.scl + (scene.scl>>1), 'slice', 'button.png');
+                    grid[y][x].setScale(scene.imgScl);
+                    grid[y][x].options = {
+                        arrY: y,
+                        arrX: x,
+                        bombs: 0,
+                        isBomb: false
+                    };
+
+                    grid[y][x].setInteractive();
+                }
             }
 
             return grid;
         },
 
-        walkGrid: (grid, callBack) => {
+        loopThrough: (grid, apply) => {
 
-            for(let posY in grid)
-                for(let posX in grid[posY])
-                    callBack(posY, posX);
-        },
-
-        placeSprites: (grid, state) => {
-
-            scene.ctrl.walkGrid(grid, (posY, posX) => {
-
-                let sprite = scene.add.sprite(posX, posY, 'ready');
-                sprite.state = {
-    
-                    ...state,
-                    x: posX,
-                    y: posY
-                };
-                
-                grid[posY][posX] = sprite;
-            });
+            for(let y = 0; y < scene.height / scene.scl; y++)
+                for(let x = 0; x < scene.width / scene.scl; x++)
+                    grid[y][x] = apply(grid[y][x]);
 
             return grid;
         },
 
-        countPositions: (grid) => {
-
-            let totalPostions = 0;
-            scene.ctrl.walkGrid(grid, () => {
-                
-                totalPostions++;
-            });
-
-            return totalPostions;
-        },
-
-        placeBoombs: (grid, posY, posX, totalBoombs) => {
+        placeBombs: (grid, totalBoombs) => {
 
             while(true) {
 
-                let x = scene.ctrl.randomArrayEle(posX);
-                let y = scene.ctrl.randomArrayEle(posY);
+                let y = Math.floor(Math.random() * (scene.height / scene.scl));
+                let x = Math.floor(Math.random() * (scene.width / scene.scl));
 
-                if(grid[y][x].state.type === 'boomb')
-                continue;
-                
-                grid[y][x].state.type = 'boomb';
+                if(grid[y][x].options.isBomb)
+                    continue;
+
+                grid[y][x].options.isBomb = true;
 
                 totalBoombs--;
                 if(totalBoombs === 0)
@@ -122,53 +107,74 @@ const controller = (scene) => {
             return grid;
         },
 
-        attachEvent: (grid, onCklickHandler) => {
+        countBombs: (grid) => {
 
-            scene.ctrl.walkGrid(grid, (posY, posX) => {
+            scene.ctrl.loopThrough(grid, (obj) => {
 
-                grid[posY][posX].setInteractive({ useHandCursor: true });
-                grid[posY][posX].on('pointerup', () => onCklickHandler(grid[posY][posX]));
+                if(!obj.options.isBomb)
+                    return obj;
+
+                // acima direita
+                if(grid[obj.options.arrY-1] && grid[obj.options.arrY-1][obj.options.arrX-1])
+                    grid[obj.options.arrY-1][obj.options.arrX-1].options.bombs++;
+                // acima
+                if(grid[obj.options.arrY-1] && grid[obj.options.arrY-1][obj.options.arrX])
+                    grid[obj.options.arrY-1][obj.options.arrX].options.bombs++;
+                // acima esquerda
+                if(grid[obj.options.arrY-1] && grid[obj.options.arrY-1][obj.options.arrX+1])
+                    grid[obj.options.arrY-1][obj.options.arrX+1].options.bombs++;
+                // esquerda
+                if(grid[obj.options.arrY] && grid[obj.options.arrY][obj.options.arrX-1])
+                    grid[obj.options.arrY][obj.options.arrX-1].options.bombs++;
+                // direita
+                if(grid[obj.options.arrY] && grid[obj.options.arrY][obj.options.arrX+1])
+                    grid[obj.options.arrY][obj.options.arrX+1].options.bombs++;
+                // abaixo direita
+                if(grid[obj.options.arrY+1] && grid[obj.options.arrY+1][obj.options.arrX-1])
+                    grid[obj.options.arrY+1][obj.options.arrX-1].options.bombs++;
+                // abaixo
+                if(grid[obj.options.arrY+1]&& grid[obj.options.arrY+1][obj.options.arrX])
+                    grid[obj.options.arrY+1][obj.options.arrX].options.bombs++;
+                // abaixo esquerda
+                if(grid[obj.options.arrY+1] && grid[obj.options.arrY+1][obj.options.arrX+1])
+                    grid[obj.options.arrY+1][obj.options.arrX+1].options.bombs++;
+
+                return obj;
             });
 
             return grid;
         },
 
-        countBoombsAllround: (grid, boomWidth, boomHeight) => {
+        addEmpty(x, y, options) {
 
-            scene.ctrl.walkGrid(grid, (posY, posX) => {
+            let empty = scene.add.image(x, y, 'slice', 'empty.png');
+            empty.setScale(scene.imgScl);
+        },
 
-                if(grid[posY][posX].state.type === 'boomb'){
+        addNumber(x, y, number) {
 
-                    // topLeft
-                    if(grid[parseInt(posY)-boomHeight] && grid[parseInt(posY)-boomHeight][parseInt(posX)-boomWidth])
-                        grid[parseInt(posY)-boomHeight][parseInt(posX)-boomWidth].state.boombsAllround++;
-                    // topRight
-                    if(grid[parseInt(posY)-boomHeight] && grid[parseInt(posY)-boomHeight][parseInt(posX)+boomWidth])
-                        grid[parseInt(posY)-boomHeight][parseInt(posX)+boomWidth].state.boombsAllround++;
-                    // topCenter
-                    if(grid[parseInt(posY)-boomHeight] && grid[parseInt(posY)-boomHeight][parseInt(posX)])
-                        grid[parseInt(posY)-boomHeight][parseInt(posX)].state.boombsAllround++;
-    
-                    // bottomLeft
-                    if(grid[parseInt(posY)+boomHeight] && grid[parseInt(posY)+boomHeight][parseInt(posX)-boomWidth])
-                        grid[parseInt(posY)+boomHeight][parseInt(posX)-boomWidth].state.boombsAllround++;
-                    // bottomRight
-                    if(grid[parseInt(posY)+boomHeight] && grid[parseInt(posY)+boomHeight][parseInt(posX)+boomWidth])
-                        grid[parseInt(posY)+boomHeight][parseInt(posX)+boomWidth].state.boombsAllround++;
-                    // bottomCenter
-                    if(grid[parseInt(posY)+boomHeight] && grid[parseInt(posY)+boomHeight][parseInt(posX)])
-                        grid[parseInt(posY)+boomHeight][parseInt(posX)].state.boombsAllround++;
-    
-                    // left
-                    if(grid[parseInt(posY)] && grid[parseInt(posY)][parseInt(posX)-boomWidth])
-                        grid[parseInt(posY)][parseInt(posX)-boomWidth].state.boombsAllround++;
-                    // right
-                    if(grid[parseInt(posY)] && grid[parseInt(posY)][parseInt(posX)+boomWidth])
-                        grid[parseInt(posY)][parseInt(posX)+boomWidth].state.boombsAllround++;
-                }
-            });
+            let color = [];
+            color[0] = '#000000';
+            color[1] = '#0000FF';
+            color[2] = '#007B00';
+            color[3] = '#FF0000';
+            color[4] = '#00007B';
+            color[5] = '#7B0000';
+            color[6] = '#7B007B';
+            color[7] = '#7B7B00';
+            color[8] = '#7B7B7B';
 
-            return grid;
+            let style = {
+                fontFamily: 'Arial Black,Arial Bold,Gadget,sans-serif',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: color[number],
+                stroke: color[number],
+                strokeThickness: 1,
+                align: 'center'
+            };
+
+            scene.add.text(x-7, y-13, number, style);
         },
 
         clearSpace: (y, x, grid, totalPositions, boomHeight, boomWidth) => {
@@ -210,15 +216,23 @@ const controller = (scene) => {
 
         clearAll: (grid) => {
         
-            scene.ctrl.walkGrid(grid, (posY, posX) => {
+            scene.ctrl.loopThrough(grid, (obj) => {
 
-                grid[posY][posX].disableInteractive();
+                let x = obj.x;
+                let y = obj.y;
+                let options = obj.options;
+                obj.disableInteractive();
 
-                if(grid[posY][posX].state.type === 'boomb'){
+                if(!options.isBomb && options.bombs)
+                    scene.ctrl.addNumber(x, y, options.bombs);
 
-                    grid[posY][posX].destroy();
-                    scene.add.sprite(posX, posY, 'boomb');
+                if(options.isBomb){
+
+                    let bomb = scene.add.image(x, y, 'slice', 'bomb.png');
+                    bomb.setScale(scene.imgScl);
                 }
+
+                return obj;
             });
         },
 
@@ -235,16 +249,20 @@ const controller = (scene) => {
             });
         },
     
-        gameOver: (grid, worldHeight, worldWidth) => {
+        gameOver: (x, y, grid) => {
     
             scene.ctrl.clearAll(grid);
-            setTimeout(()=>{
-    
-                let sprite = scene.add.sprite(worldWidth / 2, worldHeight / 2, 'gameover').setInteractive({ useHandCursor: true });
-                sprite.on('pointerover', () => sprite.alpha = 0.9);
-                sprite.on('pointerout', () => sprite.alpha = 1);
-                sprite.on('pointerup', () => window.location.reload());
-                sprite.on('pointerup', () => window.location.reload());
+
+            let bomb = scene.add.image(x, y, 'slice', 'bombactive.png');
+            bomb.setScale(scene.imgScl);
+
+            let sprite = scene.add.sprite(scene.width>>1, scene.height>>1, 'gameover').setInteractive({ useHandCursor: true });
+            sprite.setInteractive({ useHandCursor: true });
+            sprite.on('pointerover', () => sprite.alpha = 0.9);
+            sprite.on('pointerout', () => sprite.alpha = 1);
+            sprite.on('pointerdown', () => {
+
+                window.location.reload();
             });
         }
     };
