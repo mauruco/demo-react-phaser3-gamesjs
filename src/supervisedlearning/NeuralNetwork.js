@@ -32,7 +32,7 @@ class NeuralNetwork {
         return x * (1 - x);
     }
 
-    guess(inputsArray, toArray = true) {
+    predict(inputsArray, toArray = true) {
      
         let outsOut = this.feedforward(inputsArray);
         return toArray ? Matrix.toArray(outsOut) : outsOut;

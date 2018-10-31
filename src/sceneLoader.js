@@ -13,7 +13,7 @@ import Colorpicker from './colorpicker';
 import Display from './display';
 import Pathfinderfluid from './pathfinderfluid';
 import Perceptron from './perceptron';
-import Neural from './neural';
+import SupervisedLearning from './supervisedlearning';
 
 export const sceneLoader = () => {
 
@@ -73,6 +73,6 @@ export const sceneLoader = () => {
     if(hash === '#perceptron')
         new Phaser.Game(Perceptron.config());
 
-    if(hash === '#neural')
-        new Phaser.Game(Neural.config());
+    if(hash === '#supervisedlearning')
+        new Phaser.Game(SupervisedLearning.config());
 }
