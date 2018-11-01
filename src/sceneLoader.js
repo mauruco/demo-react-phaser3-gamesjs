@@ -18,18 +18,9 @@ import SupervisedLearning from './supervisedlearning';
 export const sceneLoader = () => {
 
     let hash = window.location.hash;
-    let as = document.getElementsByTagName('a');
-
     let menu = document.getElementById('menu');
-    menu.style.display = 'block';
-
-    for(let a in as) {
-
-        if(as[a].href !== window.location.href)
-            continue;
-
-        as[a].className = 'selected';
-    }
+    if(!hash)
+        menu.style.display = 'block';
 
     if(hash === '#debuger')
         new Phaser.Game(Debuger.config());

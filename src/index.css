@@ -2,38 +2,24 @@ html, body{
   padding: 0;
   margin: 0;
   background-color: #EEEEEE;
-  width: 100%;
-  font-family: Lato, "Lucida Grande", Tahoma, Sans-Serif;
-  width: 100%;
-  height:100%;
+  font-family: Arial Black, Arial Bold, Gadget, sans-serif;
   background-repeat: no-repeat;
-  background-color: #99B628;
+  width: 100%;
+  height: 100%;
 }
 body {
-  background-image: url("/assets/Phaser-Logo-Small.png");
-  background-position-x: 650px;
-  background-position-y: 150px;
+  background-image: url('/assets/Phaser-Logo-Small.png');
+  background-position-x: 330px;
+  background-position-y: 40px;
 }
-canvas {
-  position: absolute;
-  top: 78px;
-  left: 10px;
-  width: 600px;
-}
-#menu, #opt , .opt{
+#menu{
   position: absolute;
   top: 0;
   left: 10px;
   margin: 0;
   padding: 0;
 }
-#opt {
-  position: absolute;
-  top: 680px;
-  left: 10px;
-  text-align: right;
-}
-#menu a, #opt a, #opt button{
+#menu a{
   display: inline-block;
   text-decoration: none;
   padding: 5px 10px;
@@ -43,33 +29,17 @@ canvas {
   border: 1px solid #666666;
   background-color: #FFFFFF;
   border-radius: 2px;
+  width: 250px;
+  text-align: center;
 }
-#menu a:hover, #menu a.selected, #opt a:hover, #opt a.selected, #opt button:hover, #opt button.selected{
+#menu a:hover, #menu a.selected{
   background-color: #666666;
   color: #FDFDFD;
 }
-#menu a.dark, #opt a.dark, #opt button.dark{
+#menu a.dark{
   background-color: #333333;
   color: #EEEEEE;
 }
-#menu a.dark:hover, #opt a.dark:hover, #opt button.dark:hover{
+#menu a.dark:hover{
   background-color: #000000;
-}
-#opt input[type=number]{
-  padding: 5px 10px;
-  max-width: 50px;
-  border-radius: 2px;
-  border: 1px solid #666666;
-}
-#opt a, #opt button{
-  margin-right: 0;
-}
-.canvas-border {
-  border: 1px solid #333333;
-}
-input.points {
-  background-color: transparent;
-  color: #333333;
-  border: 1px solid transparent !important;
-  font-size: 1em;
 }

@@ -1,0 +1,77 @@
+canvas {
+  border-width: 5px;  
+  border-style: outset;
+}
+div#opt {
+  position: relative;
+  width: 600px;
+  height: 40px;
+  padding: 0;
+  margin: 0;
+  border-width: 5px;  
+  border-style: outset;
+  text-align: center;
+}
+div#opt div {
+  display: inline-block;
+  background-image: url("/assets/minesweeper/slice.png");
+  background-size: 360px, 40px;
+  background-position-x: -600px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+}
+div#opt div.gameover {
+  background-position-x: -680px;
+}
+div#opt div.success {
+  background-position-x: -640px;
+}
+input {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 30px;
+  text-align: center;
+  background-color: #000000;
+  color: #FF0000;
+  font-size: 24px;
+  padding: 5px 10px;
+  border: 0 solid transparent;
+  vertical-align: top;
+}
+input ~ input {
+  left: auto;
+  right: 0;
+}
+button {
+  position: absolute;
+  top: 0;
+  right: 60px;
+  background-image: url("/assets/minesweeper/slice.png");
+  background-size: 360px, 40px;
+  background-position-x: -40px;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  border: 0 solid transparent;
+}
+button.active {
+  background-position-x: -80px;
+}
+a {
+  position: absolute;
+  top: 10px;
+  left: 80px;
+  text-decoration: none;
+  color: #333333;
+}
+a:hover {
+  color: #000000;
+}

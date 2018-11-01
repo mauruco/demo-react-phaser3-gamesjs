@@ -44,7 +44,7 @@ class Colorpicker extends Phaser.Scene {
         this.i = 0;
         
         this.back = this.add.image(this.width/2, this.height/2, 'colors');
-        this.canvasContext = this.canvas.getContext('2d');
+        this.canvasContext = this.canvas.getContext('2d'); // newTexture.getSourceImage().getContext('2d');
         this.webglContext = this.canvas.getContext('webgl');
 
         this.rect = new Phaser.Geom.Rectangle(10, 10, 100, 100);
