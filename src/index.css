@@ -20,6 +20,9 @@ body {
   padding: 0;
 }
 #menu a{
+  position:relative;
+  left: auto;
+  top: auto;
   display: inline-block;
   text-decoration: none;
   padding: 5px 10px;

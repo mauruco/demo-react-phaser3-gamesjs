@@ -1,3 +1,5 @@
+import { mapRange } from '../helpers';
+
 const controller = (scene) => {
 
     return {
@@ -6,8 +8,9 @@ const controller = (scene) => {
 
             let opt = document.createElement('div');
             opt.id = 'opt';
-            opt.innerHTML = '<input type="text" disabled="disabled" value="000"/><a href="?hard#minesweeper"></a><div></div><button></button><input type="text" disabled="disabled" value="000"/>';
+            opt.innerHTML = '<input type="text" disabled="disabled" value="000"/><a href="?hard#minesweeper"></a><div></div><a href="#">Need help?</a><button></button><input type="text" disabled="disabled" value="000"/>';
             let a = opt.getElementsByTagName('a')[0];
+            scene.help = opt.getElementsByTagName('a')[1];
             let canvas = document.getElementsByTagName('canvas')[0];
             let body = document.getElementsByTagName('body')[0];
             body.id = 'minesweeper';
@@ -43,12 +46,18 @@ const controller = (scene) => {
                 for(let x = 0; x < scene.width / scene.scl; x++){
                     
                     scene.totalPlaces++;
-                    grid[y][x] = scene.add.image(x * scene.scl + (scene.scl>>1), y * scene.scl + (scene.scl>>1), 'slice', 'button.png');
+                    let posX = x * scene.scl + (scene.scl>>1);
+                    let posY = y * scene.scl + (scene.scl>>1);
+                    grid[y][x] = scene.add.image(posX, posY, 'slice', 'button.png');
                     grid[y][x].setScale(scene.imgScl);
                     grid[y][x].options = {
+                        posX,
+                        posY,
+                        arrY: y,
                         arrY: y,
                         arrX: x,
                         bombs: 0,
+                        propability: 0,
                         isBomb: false,
                         isClear: false,
                         marked: false
@@ -76,7 +85,7 @@ const controller = (scene) => {
             }, 1000);
         },
 
-        loopThrough: (grid, apply) => {
+        loopThroughGrid: (grid, apply) => {
 
             for(let y = 0; y < scene.height / scene.scl; y++)
                 for(let x = 0; x < scene.width / scene.scl; x++)
@@ -108,7 +117,7 @@ const controller = (scene) => {
                 parents.push(grid[y+1][x+1]);
 
             for(let i = 0; i < parents.length; i++)
-                apply(parents[i]);
+                parents[i] = apply(parents[i]);
         },
 
         placeBombs: (grid, totalBoombs) => {
@@ -133,15 +142,19 @@ const controller = (scene) => {
 
         countBombs: (grid) => {
 
-            scene.ctrl.loopThrough(grid, (obj) => {
+            scene.ctrl.loopThroughGrid(grid, (obj) => {
 
                 if(!obj.options.isBomb)
                     return obj;
 
                 scene.ctrl.loopThroughParents(obj, grid, (parent) => {
 
-                    if(parent)
+                    if(parent){
+
                         parent.options.bombs++;
+                        return parent;
+                    }
+                    return parent;
                 });
 
                 return obj;
@@ -155,14 +168,16 @@ const controller = (scene) => {
             scene.ctrl.loopThroughParents(obj, grid, (parent) => {
                 
                 if(parent.options.isClear || parent.options.isBomb)
-                    return;
+                    return parent;
+                
                 scene.ctrl.clearSpot(parent, grid);
+                return parent;
             });
         },
 
         clearBombs: (grid, callBack) => {
 
-            scene.ctrl.loopThrough(grid, (obj) => {
+            scene.ctrl.loopThroughGrid(grid, (obj) => {
 
             });
             callBack();
@@ -170,7 +185,7 @@ const controller = (scene) => {
 
         clearAll: (grid, callBack) => {
         
-            scene.ctrl.loopThrough(grid, (obj) => {
+            scene.ctrl.loopThroughGrid(grid, (obj) => {
 
                 if(obj.options.isClear)
                     return;
@@ -211,8 +226,9 @@ const controller = (scene) => {
                 
             if(obj.marker)
                 return;
-                
-            scene.totalPlaces--;
+            
+            if(!gameover)
+                scene.totalPlaces--;
 
             obj.disableInteractive();
             obj.options.isClear = true;
@@ -235,35 +251,109 @@ const controller = (scene) => {
                 scene.ctrl.gameOver(grid);
             }
 
-            if(scene.totalPlaces  == 0 && !gameover)
+            if(scene.totalPlaces  === 0 && !gameover)
                 scene.ctrl.success(grid);
         },
+    
+        getClearedPlaces: (grid) => {
 
-        addMarker(obj) {
+            let cleared = [];
+            let gridClone = grid.slice();
+
+            scene.ctrl.loopThroughGrid(gridClone, (obj) => {
+
+                if(!obj.options.isClear || obj.options.bombs === 0)
+                    return obj;
+
+                let parents = [];
+
+                scene.ctrl.loopThroughParents(obj, grid, (parent) => {
+
+                    if(parent.options.isClear)
+                        return parent;
+
+                    parent.options.propability = 0;
+                    parents.push(parent);
+                    return parent;
+                });
+
+                obj.options.parents = parents;
+
+                cleared.push(obj);
+                return obj;
+            });
+
+            return cleared;
+        },
+
+        clearPropabilitys: (drawedPropabilitys) => {
+
+            if(!drawedPropabilitys)
+                return [];
+
+            for(let key in drawedPropabilitys){
+
+                drawedPropabilitys[key].destroy();
+                delete(drawedPropabilitys[key]);
+            }
+
+            return [];
+        },
+
+        getPropabilitys: (cleareds) => {
+
+            let propabilitys = [];
+
+            for(let i = 0; i < cleareds.length; i++){
+
+                let obj = cleareds[i];
+                let parents = cleareds[i].options.parents;
+
+                let propability = Math.round((obj.options.bombs * 100) / parents.length);
+
+                for(let y = 0; y < parents.length; y++){
+
+                    if(parents[y].options.propability >= propability)
+                        continue;
+
+                    parents[y].options.propability = propability;
+                    propabilitys[(parents[y].options.posX + parents[y].options.posY * scene.width) * 4] = { x: parents[y].options.posX, y: parents[y].options.posY, number: ('  '+propability).slice(-3)};
+                }
+            }
+
+            let reOrdered = [];
+            for(let key in propabilitys)
+                reOrdered.push(propabilitys[key]);
+
+            propabilitys = [];
+            return reOrdered;
+        },
+
+        addMarker: (obj) => {
 
             obj.marker = scene.add.image(obj.x, obj.y, 'slice', 'buttonmarked.png');
             obj.marker.setScale(scene.imgScl);
         },
 
-        addBomb(obj) {
+        addBomb: (obj) => {
 
             let bomb = scene.add.image(obj.x, obj.y, 'slice', 'bomb.png');
             bomb.setScale(scene.imgScl);
         },
 
-        addBombActive(obj) {
+        addBombActive: (obj) => {
 
             let bomb = scene.add.image(obj.x, obj.y, 'slice', 'bombactive.png');
             bomb.setScale(scene.imgScl);
         },
 
-        addEmpty(obj) {
+        addEmpty: (obj) => {
 
             let empty = scene.add.image(obj.x, obj.y, 'slice', 'empty.png');
             empty.setScale(scene.imgScl);
         },
 
-        addNumber(obj) {
+        addNumber: (obj) => {
 
             let color = [];
             color[0] = '#000000';

@@ -29,7 +29,7 @@ div#opt div.gameover {
 div#opt div.success {
   background-position-x: -640px;
 }
-input {
+div#opt input {
   display: inline-block;
   position: absolute;
   top: 0;
@@ -44,17 +44,17 @@ input {
   border: 0 solid transparent;
   vertical-align: top;
 }
-input ~ input {
+div#opt input ~ input {
   left: auto;
   right: 0;
 }
-button {
+div#opt button {
   position: absolute;
   top: 0;
   right: 60px;
   background-image: url("/assets/minesweeper/slice.png");
   background-size: 360px, 40px;
-  background-position-x: -40px;
+  background-position-x: -80px;
   width: 40px;
   height: 40px;
   margin: 0;
@@ -62,16 +62,20 @@ button {
   line-height: 0;
   border: 0 solid transparent;
 }
-button.active {
-  background-position-x: -80px;
+div#opt button.active {
+  background-position-x: -40px;
 }
-a {
+div#opt a {
   position: absolute;
   top: 10px;
   left: 80px;
   text-decoration: none;
   color: #333333;
 }
-a:hover {
+div#opt a:hover {
   color: #000000;
+}
+div#opt a ~ a {
+  left: auto;
+  right: 120px;
 }
