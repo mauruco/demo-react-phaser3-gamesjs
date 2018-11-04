@@ -45,7 +45,7 @@ class Minesweeper extends Phaser.Scene {
     create() {
 
         this.dificulty = window.location.search === '?hard' ? 'hard' : 'easy';
-        this.bombsNumber =  this.dificulty === 'hard' ? 150 : 40;
+        this.bombsNumber =  this.dificulty === 'hard' ? 250 : 40;
         this.width = this.game.config.width;
         this.height = this.game.config.height;
         this.scl = 30;
@@ -67,6 +67,8 @@ class Minesweeper extends Phaser.Scene {
         this.grid = this.ctrl.placeBombs(this.grid, this.bombsNumber);
         // count bombs
         this.grid = this.ctrl.countBombs(this.grid);
+        // get free place
+        this.freePlace = this.ctrl.getFreePlace(this.grid);
         
         // marker
         this.marker.addEventListener('click', (e) => {
@@ -86,7 +88,8 @@ class Minesweeper extends Phaser.Scene {
             e.preventDefault();
             if(!this.firstHit || this.onHelping)
                 return;
-
+                
+            this.count = 0;
             this.onHelping = true;
             this.propabilitys = this.ctrl.clearPropabilitys(this.drawedPropabilitys);
             this.cleareds = this.ctrl.getClearedPlaces(this.grid);
@@ -95,6 +98,8 @@ class Minesweeper extends Phaser.Scene {
         });
         
         // grid click
+        // clean propabilitys after 3 clicks
+        this.count = 0;
         this.input.on('gameobjectdown', (pointer, obj) => {
 
             if(this.onHelping)
@@ -107,6 +112,13 @@ class Minesweeper extends Phaser.Scene {
             }
 
             this.ctrl.clearSpot(obj, this.grid);
+            
+            if(this.count === 3) {
+                
+                this.ctrl.clearPropabilitys(this.drawedPropabilitys);
+                this.count = 0;
+            }
+            this.count++;
         });
     }
 
@@ -133,6 +145,8 @@ class Minesweeper extends Phaser.Scene {
 
         let prop = this.propabilitys.pop();
 
+        if(prop.marker)
+            return;
                     
         let color1   = parseInt(mapRange(prop.number, 0, 100, 0, 255)).toString(16);
         let color2   = parseInt(mapRange(prop.number, 0, 100, 255, 0)).toString(16);

@@ -1,4 +1,4 @@
-import { mapRange } from '../helpers';
+import { randomArrayEle } from '../helpers';
 
 const controller = (scene) => {
 
@@ -37,8 +37,7 @@ const controller = (scene) => {
             }
         },
 
-        // makeGrid: (posY, posX) => {
-        makeGrid: (totalPlaces) => {
+        makeGrid: () => {
 
             let grid = [];
             for(let y = 0; y < scene.height / scene.scl; y++){
@@ -54,21 +53,45 @@ const controller = (scene) => {
                         posX,
                         posY,
                         arrY: y,
-                        arrY: y,
                         arrX: x,
                         bombs: 0,
                         propability: 0,
                         isBomb: false,
                         isClear: false,
-                        marked: false
+                        marker: null
                     };
 
                     grid[y][x].setInteractive();
-                    grid[y][x].marker = null;
                 }
             }
 
             return grid;
+        },
+
+        getFreePlace: (grid, freePlace) => {
+
+            while(true) {
+
+                let gridY = randomArrayEle(grid);
+                let obj = randomArrayEle(gridY);
+
+                
+                if(obj.options.bombs > 0 || obj.options.isBomb)
+                    continue;
+
+                let style = {
+                    fontFamily: 'Arial Black,Arial Bold,Gadget,sans-serif',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    color: '#00FF00',
+                    stroke: '#000000',
+                    strokeThickness: 3,
+                    align: 'center'
+                }
+        
+                freePlace = scene.add.text(obj.options.posX-7, obj.options.posY-14, obj.options.bombs, style);
+                return freePlace;
+            }
         },
 
         time: () => {
@@ -208,12 +231,12 @@ const controller = (scene) => {
                 
                 let bombs = parseInt(scene.boombsCalc.value);
                 
-                if(obj.marker) {
+                if(obj.options.marker) {
                     
                     bombs++;
                     scene.boombsCalc.value = ('00'+bombs).slice(-3);
-                    obj.marker.destroy();
-                    obj.marker = null;
+                    obj.options.marker.destroy();
+                    obj.options.marker = null;
                     return;
                 }
                 
@@ -224,7 +247,7 @@ const controller = (scene) => {
                 return;
             }
                 
-            if(obj.marker)
+            if(obj.options.marker)
                 return;
             
             if(!gameover)
@@ -317,7 +340,7 @@ const controller = (scene) => {
                         continue;
 
                     parents[y].options.propability = propability;
-                    propabilitys[(parents[y].options.posX + parents[y].options.posY * scene.width) * 4] = { x: parents[y].options.posX, y: parents[y].options.posY, number: ('  '+propability).slice(-3)};
+                    propabilitys[(parents[y].options.posX + parents[y].options.posY * scene.width) * 4] = { marker: parents[y].options.marker ? true : false, x: parents[y].options.posX, y: parents[y].options.posY, number: ('  '+propability).slice(-3)};
                 }
             }
 
@@ -331,8 +354,8 @@ const controller = (scene) => {
 
         addMarker: (obj) => {
 
-            obj.marker = scene.add.image(obj.x, obj.y, 'slice', 'buttonmarked.png');
-            obj.marker.setScale(scene.imgScl);
+            obj.options.marker = scene.add.image(obj.x, obj.y, 'slice', 'buttonmarked.png');
+            obj.options.marker.setScale(scene.imgScl);
         },
 
         addBomb: (obj) => {
