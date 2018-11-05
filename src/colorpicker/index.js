@@ -26,13 +26,10 @@ class Colorpicker extends Phaser.Scene {
         this.load.image('colors', 'assets/colorpicker/colormap.gif');
     }
 
-    text() {
-
-        let opt = document.getElementById('opt');
-        opt.innerHTML = '<span class="inline">Color Picker!</span>';
-    }
-
     create() {
+
+        let body = document.getElementsByTagName('body')[0];
+        body.style.backgroundImage = 'none';
 
         this.width = this.game.config.width;
         this.height = this.game.config.height;
@@ -40,7 +37,6 @@ class Colorpicker extends Phaser.Scene {
         this.graph = this.add.graphics();
         this.graph.setDefaultStyles(this.defaultStyles);
         this.canvas = document.getElementsByTagName('canvas')[0];
-        this.text();
         this.i = 0;
         
         this.back = this.add.image(this.width/2, this.height/2, 'colors');

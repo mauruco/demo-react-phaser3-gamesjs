@@ -4,26 +4,12 @@ class Debuger extends Phaser.Scene {
 
     static config = () => {
 
-        setTimeout(() => {
-
-            let canvas = document.getElementsByTagName('canvas')[0];
-            canvas.className = 'canvas-border';
-        });
-    };
-
-    constructor() {
-
-        super({
-            key: 'Debuger',
-            // active: false,
-            // visible: true,
-            // pack: false,
-            // cameras: null,
-            // map: {},
-            // physics: {},
-            // loader: {},
-            // plugins: false,
-            // input: {},
+        return {
+            type: Phaser.AUTO,
+            width: 600,
+            height: 600,
+            backgroundColor: 0xEEEEEE,
+            scene: [Debuger],
             physics: {
                 default: 'arcade',
                 arcade: {
@@ -31,12 +17,17 @@ class Debuger extends Phaser.Scene {
                     gravity: { y: 500 }
                 }
             }
-        });
+        };
+    };
+
+    constructor() {
+
+        super({key: 'Debuger'});
     }
 
     preload() {
 
-        this.load.image('block', 'assets/ready.png');
+        this.load.image('block', 'assets/success_1.png');
     }
 
     create() {

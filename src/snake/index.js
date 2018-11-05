@@ -1,5 +1,6 @@
 import Phaser from '../Phaser';
 import controller from './controller';
+import './style.css';
 
 class Snake extends Phaser.Scene {
 
@@ -41,9 +42,9 @@ class Snake extends Phaser.Scene {
         this.load.image('body', 'assets/snake/body.png');
         this.load.image('apple', 'assets/snake/apple.png');
         this.load.image('grape', 'assets/snake/grape.png');
-        this.load.image('gameover', 'assets/gameover.png');
-        this.load.image('success', 'assets/success.png');
-        this.load.image('ready', 'assets/ready.png');
+        this.load.image('gameover', 'assets/fail_1.png');
+        this.load.image('success', 'assets/success_1.png');
+        this.load.image('ready', 'assets/ready_1.png');
     }
 
     create() {

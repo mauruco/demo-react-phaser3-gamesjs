@@ -1,4 +1,5 @@
 import Phaser from '../Phaser';
+import './style.css';
 
 class Starfield extends Phaser.Scene {
 
@@ -33,9 +34,14 @@ class Starfield extends Phaser.Scene {
 
     controllers() {
 
+        let opt = document.createElement('div');
+        opt.id = 'opt';
         window.sceneemit = () => {this.events.emit('speedChange')};
-        let opt = document.getElementById('opt');
         opt.innerHTML = '<span class="inline">Speed: </span><input type="number" value="10" /><button class="dark" onclick="window.sceneemit()">APPLY</button>';
+        let body = document.getElementsByTagName('body')[0];
+        let canvas = document.getElementsByTagName('canvas')[0];
+        body.id = 'starfield';
+        body.insertBefore(opt, canvas);
     }
 
     random(min, max) {

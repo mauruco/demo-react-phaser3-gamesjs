@@ -1,8 +1,8 @@
-canvas {
+body#minesweeper canvas {
   border-width: 5px;  
   border-style: outset;
 }
-div#opt {
+body#minesweeper div#opt {
   position: relative;
   width: 600px;
   height: 40px;
@@ -12,7 +12,7 @@ div#opt {
   border-style: outset;
   text-align: center;
 }
-div#opt div {
+body#minesweeper div#opt div {
   display: inline-block;
   background-image: url("/assets/minesweeper/slice.png");
   background-size: 360px, 40px;
@@ -23,13 +23,13 @@ div#opt div {
   margin: 0;
   line-height: 0;
 }
-div#opt div.gameover {
+body#minesweeper div#opt div.gameover {
   background-position-x: -680px;
 }
-div#opt div.success {
+body#minesweeper div#opt div.success {
   background-position-x: -640px;
 }
-div#opt input {
+body#minesweeper div#opt input {
   display: inline-block;
   position: absolute;
   top: 0;
@@ -44,11 +44,11 @@ div#opt input {
   border: 0 solid transparent;
   vertical-align: top;
 }
-div#opt input ~ input {
+body#minesweeper div#opt input ~ input {
   left: auto;
   right: 0;
 }
-div#opt button {
+body#minesweeper div#opt button {
   position: absolute;
   top: 0;
   right: 60px;
@@ -62,20 +62,20 @@ div#opt button {
   line-height: 0;
   border: 0 solid transparent;
 }
-div#opt button.active {
+body#minesweeper div#opt button.active {
   background-position-x: -40px;
 }
-div#opt a {
+body#minesweeper div#opt a {
   position: absolute;
   top: 10px;
   left: 80px;
   text-decoration: none;
   color: #333333;
 }
-div#opt a:hover {
+body#minesweeper div#opt a:hover {
   color: #000000;
 }
-div#opt a ~ a {
+body#minesweeper div#opt a ~ a {
   left: auto;
   right: 120px;
 }

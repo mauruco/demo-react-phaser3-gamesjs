@@ -1,18 +1,16 @@
 const controller = (scene) => {
 
-    // init
-    setTimeout(() => {
-
-        let canvas = document.getElementsByTagName('canvas')[0];
-        canvas.className = 'canvas-border';
-    });
-
     return {
 
         controllers: () => {
 
-            let opt = document.getElementById('opt');
+            let opt = document.createElement('div');
+            opt.id = 'opt';
+            let canvas = document.getElementsByTagName('canvas')[0];
+            let body = document.getElementsByTagName('body')[0];
+            body.id = 'snake';
             opt.innerHTML = '<span class="inline">POINTS: </span><input type="number" class="points" value="0" disabled="disabled" />';
+            body.insertBefore(opt, canvas);
             return document.querySelector('#opt input');
         },
 
