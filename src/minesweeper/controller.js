@@ -32,8 +32,10 @@ const controller = (scene) => {
             if(dificulty === '?hard'){
                 
                 opt.style.width = '1350px';
+                opt.style.marginLeft = '-675px';
                 a.innerHTML = 'To hard?'
                 a.href = window.location.origin + '/' + '#minesweeper';
+                canvas.style.marginLeft = '-675px';
             }
         },
 

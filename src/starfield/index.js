@@ -1,5 +1,4 @@
 import Phaser from '../Phaser';
-import './style.css';
 
 class Starfield extends Phaser.Scene {
 

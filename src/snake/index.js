@@ -1,6 +1,5 @@
 import Phaser from '../Phaser';
 import controller from './controller';
-import './style.css';
 
 class Snake extends Phaser.Scene {
 

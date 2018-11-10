@@ -1,6 +1,7 @@
 body#minesweeper canvas {
-  border-width: 5px;  
-  border-style: outset;
+  border-width: 5px !important; 
+  border-style: outset !important;
+  border-color: #CCCCCC !important;
 }
 body#minesweeper div#opt {
   position: relative;
@@ -10,6 +11,7 @@ body#minesweeper div#opt {
   margin: 0;
   border-width: 5px;  
   border-style: outset;
+  border-color: #CCCCCC !important;
   text-align: center;
 }
 body#minesweeper div#opt div {
@@ -78,4 +80,7 @@ body#minesweeper div#opt a:hover {
 body#minesweeper div#opt a ~ a {
   left: auto;
   right: 120px;
+}
+body#minesweeper div#opt {
+  margin-left: -300px;
 }
