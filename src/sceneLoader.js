@@ -5,6 +5,7 @@ import Snake from './snake';
 import Brick from './brick';
 import Colorpicker from './colorpicker';
 import Debuger from './Debuger';
+import CutString from './cutstring';
 
 export const sceneLoader = () => {
 
@@ -14,7 +15,7 @@ export const sceneLoader = () => {
         
         menu.style.display = 'block';
         let body = document.getElementsByTagName('body')[0];
-        body.style.backgroundImage = 'url("/assets/Phaser-Logo-Small.png")';
+        body.style.backgroundImage = 'url("assets/Phaser-Logo-Small.png")';
     }
 
     if(hash === '#debuger')
@@ -34,4 +35,7 @@ export const sceneLoader = () => {
     
     if(hash === '#brick')
         new Phaser.Game(Brick.config()); 
+    
+    if(hash === '#cutstring')
+        new CutString(); 
 }
