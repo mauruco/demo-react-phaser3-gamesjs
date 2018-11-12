@@ -33,26 +33,27 @@ class CutString {
             let temp = txt.slice(i, i+maxChar);
             if(!temp)
                 break;
-            all.push(temp);
+
+            all.push(new Blob(['code+="'+temp+'";'], { type: 'application/javascript;charset=utf-8;' }));
             i += maxChar;
         }
 
-        let str = '';
+        let index = 1;
 
-        for(let i = 0; i < all.length; i++)
-            str += 'code+="' + all[i] + '";';
-            
-        var blob = new Blob([str], { type: 'text/plain;charset=utf-8;' });
+        for(let i = 0; i < all.length; i++){
 
-        let link = document.createElement("a");
-        if (link.download !== undefined) {
-            var url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", 'code');
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            let link = document.createElement("a");
+            if (link.download !== undefined) {
+                let url = URL.createObjectURL(all[i]);
+                link.setAttribute("href", url);
+                link.setAttribute("download", 'code'+index);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            index++;
         }
     }
 }
