@@ -8,7 +8,7 @@ const controller = (scene) => {
 
             let opt = document.createElement('div');
             opt.id = 'opt';
-            opt.innerHTML = '<input type="text" disabled="disabled" value="000"/><a href="?hard#minesweeper"></a><div></div><a href="#">Need help?</a><button></button><input type="text" disabled="disabled" value="000"/>';
+            opt.innerHTML = '<input type="text" disabled="disabled" value="000"/><a href="'+process.env.REACT_APP_APP_URL+'/?hard#minesweeper"></a><div></div><a href="#">Need help?</a><button></button><input type="text" disabled="disabled" value="000"/>';
             let a = opt.getElementsByTagName('a')[0];
             scene.help = opt.getElementsByTagName('a')[1];
             let canvas = document.getElementsByTagName('canvas')[0];
@@ -27,14 +27,14 @@ const controller = (scene) => {
 
 
             a.innerHTML = 'To easy?'
-            a.href = window.location.origin + '/' + '?hard#minesweeper';
+            a.href = process.env.REACT_APP_APP_URL + '/' + '?hard#minesweeper';
             
             if(dificulty === '?hard'){
                 
                 opt.style.width = '1350px';
                 opt.style.marginLeft = '-675px';
                 a.innerHTML = 'To hard?'
-                a.href = window.location.origin + '/' + '#minesweeper';
+                a.href = process.env.REACT_APP_APP_URL + '/' + '#minesweeper';
                 canvas.style.marginLeft = '-675px';
             }
         },
