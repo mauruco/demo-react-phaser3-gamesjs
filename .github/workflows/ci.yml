@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 env:
-  site-name: gamesjs 
+  site-name: phaser3gamesjs 
   node-versions: 14.x
   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
