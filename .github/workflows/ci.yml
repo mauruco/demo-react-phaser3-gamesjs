@@ -29,4 +29,4 @@ jobs:
     - run: npm ci
     - run: npm test
     - run: npm run build --if-present
-    - run: npx netlify deploy --prod --site ${{ env.site-name }}
+    - run: npx netlify deploy --prod --dir build --site ${{ env.site-name }}
